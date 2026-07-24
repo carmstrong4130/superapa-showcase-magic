@@ -19,7 +19,6 @@ export function DaggerDashboard() {
               <span className="font-mono text-lg font-bold text-primary">◆</span>
             </div>
             <div>
-              <div className="font-mono text-xs uppercase tracking-[0.25em] text-muted-foreground">superapa.com // fleet_ops</div>
               <h1 className="text-2xl font-bold tracking-tight">
                 {DAGGER_VEHICLE.name} <span className="text-muted-foreground font-normal text-base">— {DAGGER_VEHICLE.year} {DAGGER_VEHICLE.make} {DAGGER_VEHICLE.model}</span>
               </h1>
