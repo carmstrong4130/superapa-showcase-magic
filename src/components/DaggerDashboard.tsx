@@ -167,11 +167,11 @@ function MonthlyLog({ groups }: { groups: YearGroup[] }) {
                   >
                     <td className={`${cell} text-xs text-muted-foreground`}>{r.label}</td>
                     <td className={cell}>{Math.round(r.miles).toLocaleString()}</td>
-                    <td className={cell}>{r.gallons.toFixed(1)}</td>
+                    <td className={cell}>{Math.round(r.gallons).toLocaleString()}</td>
                     <td className={`${cell} ${r.fillUps ? "text-primary" : ""}`}>
-                      ${r.cost.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      ${Math.round(r.cost).toLocaleString()}
                     </td>
-                    <td className={cell}>{r.mpg ? r.mpg.toFixed(1) : "—"}</td>
+                    <td className={cell}>{r.mpg ? Math.round(r.mpg).toLocaleString() : "—"}</td>
                     <td className={cell}>{r.fillUps || "—"}</td>
                     <td className="py-2.5 font-mono">{r.trips || "—"}</td>
                   </tr>
@@ -181,11 +181,11 @@ function MonthlyLog({ groups }: { groups: YearGroup[] }) {
                     {g.year} Total
                   </td>
                   <td className={`${cell} font-semibold`}>{Math.round(g.totals.miles).toLocaleString()}</td>
-                  <td className={`${cell} font-semibold`}>{g.totals.gallons.toFixed(1)}</td>
+                  <td className={`${cell} font-semibold`}>{Math.round(g.totals.gallons).toLocaleString()}</td>
                   <td className={`${cell} font-semibold text-primary`}>
-                    ${g.totals.cost.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    ${Math.round(g.totals.cost).toLocaleString()}
                   </td>
-                  <td className={`${cell} font-semibold`}>{g.totals.mpg ? g.totals.mpg.toFixed(1) : "—"}</td>
+                  <td className={`${cell} font-semibold`}>{g.totals.mpg ? Math.round(g.totals.mpg).toLocaleString() : "—"}</td>
                   <td className={`${cell} font-semibold`}>{g.totals.fillUps || "—"}</td>
                   <td className="py-2.5 font-mono font-semibold">{g.totals.trips || "—"}</td>
                 </tr>
