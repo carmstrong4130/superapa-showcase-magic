@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { FILL_UPS, DAGGER_VEHICLE, computeStats } from "@/lib/dagger-data";
+import { DAGGER_VEHICLE, computeStats, type TripRow } from "@/lib/dagger-data";
 
 type ChatMessage = { role: "user" | "assistant" | "system" | "tool"; content: string; tool_call_id?: string; tool_calls?: unknown };
 
@@ -61,8 +61,8 @@ const TOOLS = [
   },
 ];
 
-function buildSystemPrompt(): string {
-  const stats = computeStats();
+function buildSystemPrompt(rows: TripRow[]): string {
+  const stats = computeStats(rows);
   return `You are the onboard AI assistant for a vehicle named "${DAGGER_VEHICLE.name}" (${DAGGER_VEHICLE.year} ${DAGGER_VEHICLE.make} ${DAGGER_VEHICLE.model}).
 
 Answer questions about Dagger's fuel and mileage history using the JSON data below. Be concise and specific — cite numbers.
@@ -74,8 +74,8 @@ ${JSON.stringify(DAGGER_VEHICLE)}
 ## Summary stats
 ${JSON.stringify(stats, null, 2)}
 
-## Raw fill-ups (${FILL_UPS.length} rows)
-${JSON.stringify(FILL_UPS)}`;
+## Raw trip log rows (${rows.length} rows, live from Google Sheets)
+${JSON.stringify(rows)}`;
 }
 
 export const Route = createFileRoute("/api/chat")({
@@ -86,8 +86,16 @@ export const Route = createFileRoute("/api/chat")({
         const key = process.env.LOVABLE_API_KEY;
         if (!key) return new Response("Missing LOVABLE_API_KEY", { status: 500 });
 
+        let rows: TripRow[] = [];
+        try {
+          const { fetchTripRows } = await import("@/lib/sheet.server");
+          rows = await fetchTripRows();
+        } catch (e) {
+          console.error("Failed to load trip rows for chat:", e);
+        }
+
         const messages: ChatMessage[] = [
-          { role: "system", content: buildSystemPrompt() },
+          { role: "system", content: buildSystemPrompt(rows) },
           ...body.messages,
         ];
 
