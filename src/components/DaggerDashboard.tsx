@@ -250,8 +250,7 @@ function Chatbot() {
           <Sparkles className="h-4 w-4 text-primary" />
         </div>
         <div>
-          <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Copilot</div>
-          <h2 className="font-semibold leading-tight">Ask Dagger</h2>
+          <h2 className="font-semibold leading-tight">Ask Apa</h2>
         </div>
       </div>
 
