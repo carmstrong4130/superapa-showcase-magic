@@ -75,7 +75,7 @@ function StatGrid({ stats }: { stats: ReturnType<typeof computeStats> }) {
 function MonthlyChart({ data }: { data: ReturnType<typeof computeStats>["monthly"] }) {
   const [tab, setTab] = useState<"miles" | "cost" | "gallons">("miles");
   const config = {
-    miles: { key: "miles", color: "oklch(0.78 0.17 65)", label: "Miles driven" },
+    miles: { key: "miles", color: "oklch(0.70 0.20 25)", label: "Miles driven" },
     cost: { key: "cost", color: "oklch(0.72 0.15 200)", label: "Fuel cost ($)" },
     gallons: { key: "gallons", color: "oklch(0.75 0.15 140)", label: "Gallons" },
   }[tab];
