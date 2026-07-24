@@ -38,6 +38,7 @@ export type DerivedStats = {
     gallons: number;
     cost: number;
     fillUps: number;
+    trips: number;
   }>;
 };
 
@@ -62,14 +63,15 @@ export function computeStats(rows: TripRow[]): DerivedStats {
   const totalGallons = sorted.reduce((s, r) => s + r.gallons, 0);
   const totalCost = sorted.reduce((s, r) => s + r.totalCost, 0);
 
-  const byMonth = new Map<string, { miles: number; gallons: number; cost: number; fillUps: number }>();
+  const byMonth = new Map<string, { miles: number; gallons: number; cost: number; fillUps: number; trips: number }>();
   for (const r of sorted) {
     const m = r.date.slice(0, 7);
-    const prev = byMonth.get(m) ?? { miles: 0, gallons: 0, cost: 0, fillUps: 0 };
+    const prev = byMonth.get(m) ?? { miles: 0, gallons: 0, cost: 0, fillUps: 0, trips: 0 };
     prev.miles += r.miles;
     prev.gallons += r.gallons;
     prev.cost += r.totalCost;
     prev.fillUps += 1;
+    if (r.trip && r.trip.trim()) prev.trips += 1;
     byMonth.set(m, prev);
   }
 
@@ -85,6 +87,7 @@ export function computeStats(rows: TripRow[]): DerivedStats {
         gallons: Math.round(v.gallons * 10) / 10,
         cost: Math.round(v.cost * 100) / 100,
         fillUps: v.fillUps,
+        trips: v.trips,
       };
     });
 
@@ -112,6 +115,7 @@ export type MonthlyRow = {
   cost: number;
   fillUps: number;
   mpg: number;
+  trips: number;
 };
 
 export type YearGroup = {
