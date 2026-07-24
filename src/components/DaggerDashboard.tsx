@@ -3,7 +3,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { buildMonthlyLog, computeStats, DAGGER_VEHICLE, type YearGroup } from "@/lib/dagger-data";
 import { tripRowsQueryOptions } from "@/lib/sheet.functions";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis, Line, LineChart } from "recharts";
-import { Fuel, Gauge, DollarSign, TrendingUp, Send, Sparkles, MapPin, Loader2 } from "lucide-react";
+import { Fuel, Gauge, DollarSign, TrendingUp, Send, Sparkles, Loader2 } from "lucide-react";
 
 type Msg = { role: "user" | "assistant"; content: string };
 
