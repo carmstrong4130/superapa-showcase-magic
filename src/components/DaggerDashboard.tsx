@@ -1,16 +1,16 @@
-import { useMemo, useRef, useState, useEffect } from "react";
+import { Fragment, useMemo, useRef, useState, useEffect } from "react";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { computeStats, DAGGER_VEHICLE, type TripRow } from "@/lib/dagger-data";
+import { buildMonthlyLog, computeStats, DAGGER_VEHICLE, type YearGroup } from "@/lib/dagger-data";
 import { tripRowsQueryOptions } from "@/lib/sheet.functions";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis, Line, LineChart } from "recharts";
-import { Fuel, Gauge, DollarSign, TrendingUp, Send, Sparkles, MapPin, Loader2 } from "lucide-react";
+import { Fuel, Gauge, DollarSign, TrendingUp, Send, Sparkles, Loader2 } from "lucide-react";
 
 type Msg = { role: "user" | "assistant"; content: string };
 
 export function DaggerDashboard() {
   const { data: rows } = useSuspenseQuery(tripRowsQueryOptions);
   const stats = useMemo(() => computeStats(rows), [rows]);
-  const recent = useMemo(() => [...rows].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 8), [rows]);
+  const monthlyLog = useMemo(() => buildMonthlyLog(stats), [stats]);
 
   return (
     <div className="min-h-screen hud-grid">
@@ -39,7 +39,7 @@ export function DaggerDashboard() {
           <div className="lg:col-span-2 space-y-6">
             <StatGrid stats={stats} />
             <MonthlyChart data={stats.monthly} />
-            <RecentFillUps rows={recent} />
+            <MonthlyLog groups={monthlyLog} />
           </div>
 
           {/* Right: 1/3 chat */}
@@ -127,39 +127,70 @@ function MonthlyChart({ data }: { data: ReturnType<typeof computeStats>["monthly
   );
 }
 
-function RecentFillUps({ rows }: { rows: TripRow[] }) {
+function MonthlyLog({ groups }: { groups: YearGroup[] }) {
+  const cell = "py-2.5 pr-4 font-mono";
   return (
     <div className="panel p-5">
       <div className="flex items-center justify-between mb-4">
         <div>
           <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Log</div>
-          <h2 className="text-lg font-semibold">Recent Fill-Ups</h2>
+          <h2 className="text-lg font-semibold">Monthly Totals</h2>
+        </div>
+        <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+          Apr 2024 &rarr; Present
         </div>
       </div>
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
             <tr className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground text-left border-b border-border/60">
-              <th className="pb-2 pr-4">Date</th>
+              <th className="pb-2 pr-4">Month</th>
               <th className="pb-2 pr-4">Miles</th>
               <th className="pb-2 pr-4">Gal</th>
-              <th className="pb-2 pr-4">$/gal</th>
-              <th className="pb-2 pr-4">Total</th>
-              <th className="pb-2">Trip</th>
+              <th className="pb-2 pr-4">Fuel Cost</th>
+              <th className="pb-2 pr-4">MPG</th>
+              <th className="pb-2">Fill-ups</th>
             </tr>
           </thead>
           <tbody>
-            {rows.map((r) => (
-              <tr key={r.id} className="border-b border-border/30 last:border-0">
-                <td className="py-2.5 pr-4 font-mono text-xs text-muted-foreground">{r.date}</td>
-                <td className="py-2.5 pr-4 font-mono">{r.miles.toLocaleString()}</td>
-                <td className="py-2.5 pr-4 font-mono">{r.gallons.toFixed(1)}</td>
-                <td className="py-2.5 pr-4 font-mono text-muted-foreground">${r.pricePerGallon.toFixed(2)}</td>
-                <td className="py-2.5 pr-4 font-mono text-primary">${r.totalCost.toFixed(2)}</td>
-                <td className="py-2.5 text-muted-foreground flex items-center gap-1">
-                  <MapPin className="h-3 w-3" /> {r.trip || "—"}
-                </td>
-              </tr>
+            {groups.map((g) => (
+              <Fragment key={g.year}>
+                <tr>
+                  <td colSpan={6} className="pt-4 pb-1">
+                    <div className="flex items-center gap-3">
+                      <span className="font-mono text-[11px] font-bold tracking-widest text-primary">{g.year}</span>
+                      <span className="h-px flex-1 bg-border/60" />
+                    </div>
+                  </td>
+                </tr>
+                {g.months.map((r) => (
+                  <tr
+                    key={r.month}
+                    className={`border-b border-border/30 ${r.fillUps === 0 ? "text-muted-foreground/50" : ""}`}
+                  >
+                    <td className={`${cell} text-xs text-muted-foreground`}>{r.label}</td>
+                    <td className={cell}>{Math.round(r.miles).toLocaleString()}</td>
+                    <td className={cell}>{r.gallons.toFixed(1)}</td>
+                    <td className={`${cell} ${r.fillUps ? "text-primary" : ""}`}>
+                      ${r.cost.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    </td>
+                    <td className={cell}>{r.mpg ? r.mpg.toFixed(1) : "—"}</td>
+                    <td className="py-2.5 font-mono">{r.fillUps || "—"}</td>
+                  </tr>
+                ))}
+                <tr className="border-b-2 border-border/60 bg-primary/5">
+                  <td className={`${cell} text-[11px] uppercase tracking-widest text-muted-foreground`}>
+                    {g.year} Total
+                  </td>
+                  <td className={`${cell} font-semibold`}>{Math.round(g.totals.miles).toLocaleString()}</td>
+                  <td className={`${cell} font-semibold`}>{g.totals.gallons.toFixed(1)}</td>
+                  <td className={`${cell} font-semibold text-primary`}>
+                    ${g.totals.cost.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </td>
+                  <td className={`${cell} font-semibold`}>{g.totals.mpg ? g.totals.mpg.toFixed(1) : "—"}</td>
+                  <td className="py-2.5 font-mono font-semibold">{g.totals.fillUps || "—"}</td>
+                </tr>
+              </Fragment>
             ))}
           </tbody>
         </table>

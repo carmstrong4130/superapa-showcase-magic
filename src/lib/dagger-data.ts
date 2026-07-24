@@ -103,3 +103,73 @@ export function computeStats(rows: TripRow[]): DerivedStats {
     monthly,
   };
 }
+
+export type MonthlyRow = {
+  month: string; // YYYY-MM
+  label: string; // "Apr"
+  miles: number;
+  gallons: number;
+  cost: number;
+  fillUps: number;
+  mpg: number;
+};
+
+export type YearGroup = {
+  year: number;
+  months: MonthlyRow[];
+  totals: Omit<MonthlyRow, "month" | "label">;
+};
+
+const MONTH_NAMES = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+/**
+ * Continuous month-by-month log from `startMonth` (default Apr 2024) through the
+ * current month, with zero-filled gaps, grouped by calendar year with subtotals.
+ */
+export function buildMonthlyLog(stats: DerivedStats, startMonth = "2024-04"): YearGroup[] {
+  const byMonth = new Map(stats.monthly.map((m) => [m.month, m]));
+  const now = new Date();
+  const endY = now.getUTCFullYear();
+  const endM = now.getUTCMonth() + 1;
+
+  let [y, m] = startMonth.split("-").map(Number);
+  const groups: YearGroup[] = [];
+
+  while (y < endY || (y === endY && m <= endM)) {
+    const key = `${y}-${String(m).padStart(2, "0")}`;
+    const src = byMonth.get(key);
+    const row: MonthlyRow = {
+      month: key,
+      label: MONTH_NAMES[m - 1],
+      miles: src?.miles ?? 0,
+      gallons: src?.gallons ?? 0,
+      cost: src?.cost ?? 0,
+      fillUps: src?.fillUps ?? 0,
+      mpg: src && src.gallons > 0 ? Math.round((src.miles / src.gallons) * 10) / 10 : 0,
+    };
+    let group = groups.find((g) => g.year === y);
+    if (!group) {
+      group = { year: y, months: [], totals: { miles: 0, gallons: 0, cost: 0, fillUps: 0, mpg: 0 } };
+      groups.push(group);
+    }
+    group.months.push(row);
+    m += 1;
+    if (m > 12) { m = 1; y += 1; }
+  }
+
+  for (const g of groups) {
+    const miles = g.months.reduce((s, r) => s + r.miles, 0);
+    const gallons = g.months.reduce((s, r) => s + r.gallons, 0);
+    const cost = g.months.reduce((s, r) => s + r.cost, 0);
+    const fillUps = g.months.reduce((s, r) => s + r.fillUps, 0);
+    g.totals = {
+      miles: Math.round(miles * 10) / 10,
+      gallons: Math.round(gallons * 10) / 10,
+      cost: Math.round(cost * 100) / 100,
+      fillUps,
+      mpg: gallons > 0 ? Math.round((miles / gallons) * 10) / 10 : 0,
+    };
+  }
+
+  return groups;
+}
