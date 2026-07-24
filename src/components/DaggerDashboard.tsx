@@ -54,10 +54,10 @@ export function DaggerDashboard() {
 
 function StatGrid({ stats }: { stats: ReturnType<typeof computeStats> }) {
   const items = [
-    { label: "Total Miles", value: Math.round(stats.totalMiles).toLocaleString(), sub: `${stats.firstDate} → ${stats.lastDate}`, icon: Gauge },
-    { label: "Fill-ups", value: stats.totalFillUps.toString(), sub: `${stats.totalGallons.toFixed(1)} gal purchased`, icon: Fuel },
+    { label: "Total Miles", value: Math.round(stats.totalMiles).toLocaleString(), sub: "", icon: Gauge },
+    { label: "Fill-ups", value: stats.totalFillUps.toString(), sub: "", icon: Fuel },
     { label: "Total Fuel Cost", value: `$${stats.totalCost.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, sub: `$${stats.avgPricePerGallon.toFixed(2)}/gal avg`, icon: DollarSign },
-    { label: "Avg MPG", value: stats.avgMPG.toFixed(1), sub: `$${stats.costPerMile.toFixed(3)}/mile`, icon: TrendingUp },
+    { label: "Gallons Purchased", value: stats.totalGallons.toFixed(1), sub: "", icon: TrendingUp },
   ];
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -69,7 +69,7 @@ function StatGrid({ stats }: { stats: ReturnType<typeof computeStats> }) {
             <span className="font-mono text-[10px] uppercase tracking-widest">{it.label}</span>
           </div>
           <div className="mt-2 text-2xl font-bold font-mono tracking-tight text-primary">{it.value}</div>
-          <div className="mt-1 text-xs text-muted-foreground">{it.sub}</div>
+          {it.sub && <div className="mt-1 text-xs text-muted-foreground">{it.sub}</div>}
         </div>
       ))}
     </div>
