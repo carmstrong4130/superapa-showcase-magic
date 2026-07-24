@@ -22,8 +22,8 @@ export function DaggerDashboard() {
               <span className="font-mono text-lg font-bold text-primary">◆</span>
             </div>
             <div>
-              <h1 className="text-2xl font-bold tracking-tight">
-                {DAGGER_VEHICLE.name} <span className="text-muted-foreground font-normal text-base">— {DAGGER_VEHICLE.year} {DAGGER_VEHICLE.make} {DAGGER_VEHICLE.model}</span>
+              <h1 className="text-2xl font-bold tracking-tight text-red-500">
+                {DAGGER_VEHICLE.name}
               </h1>
             </div>
           </div>
