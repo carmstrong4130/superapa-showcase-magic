@@ -78,4 +78,8 @@ export async function fetchTripRows(): Promise<TripRow[]> {
       } satisfies TripRow;
     })
     .filter((r) => r.date !== "");
+
+  cache = { rows, at: Date.now() };
+  return rows;
 }
+
