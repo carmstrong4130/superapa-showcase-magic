@@ -27,10 +27,6 @@ export function DaggerDashboard() {
               </h1>
             </div>
           </div>
-          <div className="hidden md:flex items-center gap-2 font-mono text-xs text-muted-foreground">
-            <span className="h-2 w-2 rounded-full bg-primary animate-pulse" />
-            SYSTEM ONLINE
-          </div>
         </header>
 
         {/* Two column layout */}
