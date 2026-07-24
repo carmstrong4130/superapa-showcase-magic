@@ -38,6 +38,7 @@ export type DerivedStats = {
     gallons: number;
     cost: number;
     fillUps: number;
+    trips: number;
   }>;
 };
 
@@ -62,14 +63,15 @@ export function computeStats(rows: TripRow[]): DerivedStats {
   const totalGallons = sorted.reduce((s, r) => s + r.gallons, 0);
   const totalCost = sorted.reduce((s, r) => s + r.totalCost, 0);
 
-  const byMonth = new Map<string, { miles: number; gallons: number; cost: number; fillUps: number }>();
+  const byMonth = new Map<string, { miles: number; gallons: number; cost: number; fillUps: number; trips: number }>();
   for (const r of sorted) {
     const m = r.date.slice(0, 7);
-    const prev = byMonth.get(m) ?? { miles: 0, gallons: 0, cost: 0, fillUps: 0 };
+    const prev = byMonth.get(m) ?? { miles: 0, gallons: 0, cost: 0, fillUps: 0, trips: 0 };
     prev.miles += r.miles;
     prev.gallons += r.gallons;
     prev.cost += r.totalCost;
     prev.fillUps += 1;
+    if (r.trip && r.trip.trim()) prev.trips += 1;
     byMonth.set(m, prev);
   }
 
@@ -85,6 +87,7 @@ export function computeStats(rows: TripRow[]): DerivedStats {
         gallons: Math.round(v.gallons * 10) / 10,
         cost: Math.round(v.cost * 100) / 100,
         fillUps: v.fillUps,
+        trips: v.trips,
       };
     });
 
@@ -112,6 +115,7 @@ export type MonthlyRow = {
   cost: number;
   fillUps: number;
   mpg: number;
+  trips: number;
 };
 
 export type YearGroup = {
@@ -145,14 +149,15 @@ export function buildMonthlyLog(stats: DerivedStats, startMonth = "2024-04"): Ye
       gallons: src?.gallons ?? 0,
       cost: src?.cost ?? 0,
       fillUps: src?.fillUps ?? 0,
+      trips: src?.trips ?? 0,
       mpg: src && src.gallons > 0 ? Math.round((src.miles / src.gallons) * 10) / 10 : 0,
     };
     let group = groups.find((g) => g.year === y);
     if (!group) {
-      group = { year: y, months: [], totals: { miles: 0, gallons: 0, cost: 0, fillUps: 0, mpg: 0 } };
+      group = { year: y, months: [], totals: { miles: 0, gallons: 0, cost: 0, fillUps: 0, mpg: 0, trips: 0 } };
       groups.push(group);
     }
-    group.months.push(row);
+    group!.months.push(row);
     m += 1;
     if (m > 12) { m = 1; y += 1; }
   }
@@ -162,11 +167,13 @@ export function buildMonthlyLog(stats: DerivedStats, startMonth = "2024-04"): Ye
     const gallons = g.months.reduce((s, r) => s + r.gallons, 0);
     const cost = g.months.reduce((s, r) => s + r.cost, 0);
     const fillUps = g.months.reduce((s, r) => s + r.fillUps, 0);
+    const trips = g.months.reduce((s, r) => s + r.trips, 0);
     g.totals = {
       miles: Math.round(miles * 10) / 10,
       gallons: Math.round(gallons * 10) / 10,
       cost: Math.round(cost * 100) / 100,
       fillUps,
+      trips,
       mpg: gallons > 0 ? Math.round((miles / gallons) * 10) / 10 : 0,
     };
   }

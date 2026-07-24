@@ -145,14 +145,15 @@ function MonthlyLog({ groups }: { groups: YearGroup[] }) {
               <th className="pb-2 pr-4">Gal</th>
               <th className="pb-2 pr-4">Fuel Cost</th>
               <th className="pb-2 pr-4">MPG</th>
-              <th className="pb-2">Fill-ups</th>
+              <th className="pb-2 pr-4">Fill-ups</th>
+              <th className="pb-2">Trips</th>
             </tr>
           </thead>
           <tbody>
             {groups.map((g) => (
               <Fragment key={g.year}>
                 <tr>
-                  <td colSpan={6} className="pt-4 pb-1">
+                  <td colSpan={7} className="pt-4 pb-1">
                     <div className="flex items-center gap-3">
                       <span className="font-mono text-[11px] font-bold tracking-widest text-primary">{g.year}</span>
                       <span className="h-px flex-1 bg-border/60" />
@@ -171,7 +172,8 @@ function MonthlyLog({ groups }: { groups: YearGroup[] }) {
                       ${r.cost.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </td>
                     <td className={cell}>{r.mpg ? r.mpg.toFixed(1) : "—"}</td>
-                    <td className="py-2.5 font-mono">{r.fillUps || "—"}</td>
+                    <td className={cell}>{r.fillUps || "—"}</td>
+                    <td className="py-2.5 font-mono">{r.trips || "—"}</td>
                   </tr>
                 ))}
                 <tr className="border-b-2 border-border/60 bg-primary/5">
@@ -184,7 +186,8 @@ function MonthlyLog({ groups }: { groups: YearGroup[] }) {
                     ${g.totals.cost.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </td>
                   <td className={`${cell} font-semibold`}>{g.totals.mpg ? g.totals.mpg.toFixed(1) : "—"}</td>
-                  <td className="py-2.5 font-mono font-semibold">{g.totals.fillUps || "—"}</td>
+                  <td className={`${cell} font-semibold`}>{g.totals.fillUps || "—"}</td>
+                  <td className="py-2.5 font-mono font-semibold">{g.totals.trips || "—"}</td>
                 </tr>
               </Fragment>
             ))}
