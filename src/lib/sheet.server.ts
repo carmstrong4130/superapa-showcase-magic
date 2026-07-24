@@ -20,30 +20,47 @@ function normalizeDate(v: string | undefined): string {
   return s;
 }
 
+let cache: { rows: TripRow[]; at: number } | undefined;
+const CACHE_MS = 60_000;
+
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
 export async function fetchTripRows(): Promise<TripRow[]> {
+  if (cache && Date.now() - cache.at < CACHE_MS) return cache.rows;
+
   const lovableKey = process.env.LOVABLE_API_KEY;
   const sheetsKey = process.env.GOOGLE_SHEETS_API_KEY;
   if (!lovableKey || !sheetsKey) {
+    if (cache) return cache.rows;
     throw new Error("Google Sheets connection is not configured.");
   }
 
-  const res = await fetch(`${GATEWAY}/spreadsheets/${SPREADSHEET_ID}/values/${SHEET_RANGE}`, {
-    headers: {
-      Authorization: `Bearer ${lovableKey}`,
-      "X-Connection-Api-Key": sheetsKey,
-    },
-  });
+  let res: Response | undefined;
+  for (let attempt = 0; attempt < 3; attempt++) {
+    res = await fetch(`${GATEWAY}/spreadsheets/${SPREADSHEET_ID}/values/${SHEET_RANGE}`, {
+      headers: {
+        Authorization: `Bearer ${lovableKey}`,
+        "X-Connection-Api-Key": sheetsKey,
+      },
+    });
+    if (res.ok) break;
+    if (res.status !== 429 && res.status < 500) break;
+    await sleep(400 * 2 ** attempt);
+  }
 
-  if (!res.ok) {
-    const body = await res.text();
-    console.error(`Google Sheets request failed [${res.status}]: ${body}`);
-    throw new Error(`Google Sheets request failed [${res.status}]: ${body}`);
+  if (!res || !res.ok) {
+    const body = res ? await res.text() : "no response";
+    console.error(`Google Sheets request failed [${res?.status ?? 0}]: ${body}`);
+    // Serve last known good data instead of blanking the page.
+    if (cache) return cache.rows;
+    throw new Error(`Google Sheets request failed [${res?.status ?? 0}]`);
   }
 
   const data = (await res.json()) as { values?: string[][] };
   const values = data.values ?? [];
 
-  return values
+  const rows = values
+
     .map((row, i) => {
       const [date, miles, gal, cpg, cost, trip, , notes] = row;
       const gallons = num(gal);
@@ -61,4 +78,8 @@ export async function fetchTripRows(): Promise<TripRow[]> {
       } satisfies TripRow;
     })
     .filter((r) => r.date !== "");
+
+  cache = { rows, at: Date.now() };
+  return rows;
 }
+
