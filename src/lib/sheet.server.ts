@@ -61,8 +61,6 @@ export async function fetchTripRows(): Promise<TripRow[]> {
 
   const rows = values
 
-
-  return values
     .map((row, i) => {
       const [date, miles, gal, cpg, cost, trip, , notes] = row;
       const gallons = num(gal);
