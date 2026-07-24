@@ -1,13 +1,16 @@
 import { useMemo, useRef, useState, useEffect } from "react";
-import { computeStats, FILL_UPS, DAGGER_VEHICLE } from "@/lib/dagger-data";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { computeStats, DAGGER_VEHICLE, type TripRow } from "@/lib/dagger-data";
+import { tripRowsQueryOptions } from "@/lib/sheet.functions";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis, Line, LineChart } from "recharts";
 import { Fuel, Gauge, DollarSign, TrendingUp, Send, Sparkles, MapPin, Loader2 } from "lucide-react";
 
 type Msg = { role: "user" | "assistant"; content: string };
 
 export function DaggerDashboard() {
-  const stats = useMemo(() => computeStats(), []);
-  const recent = useMemo(() => [...FILL_UPS].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 8), []);
+  const { data: rows } = useSuspenseQuery(tripRowsQueryOptions);
+  const stats = useMemo(() => computeStats(rows), [rows]);
+  const recent = useMemo(() => [...rows].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 8), [rows]);
 
   return (
     <div className="min-h-screen hud-grid">
@@ -51,7 +54,7 @@ export function DaggerDashboard() {
 
 function StatGrid({ stats }: { stats: ReturnType<typeof computeStats> }) {
   const items = [
-    { label: "Total Miles", value: stats.totalMiles.toLocaleString(), sub: `odo ${stats.firstOdo.toLocaleString()} → ${stats.lastOdo.toLocaleString()}`, icon: Gauge },
+    { label: "Total Miles", value: Math.round(stats.totalMiles).toLocaleString(), sub: `${stats.firstDate} → ${stats.lastDate}`, icon: Gauge },
     { label: "Fill-ups", value: stats.totalFillUps.toString(), sub: `${stats.totalGallons.toFixed(1)} gal purchased`, icon: Fuel },
     { label: "Total Fuel Cost", value: `$${stats.totalCost.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, sub: `$${stats.avgPricePerGallon.toFixed(2)}/gal avg`, icon: DollarSign },
     { label: "Avg MPG", value: stats.avgMPG.toFixed(1), sub: `$${stats.costPerMile.toFixed(3)}/mile`, icon: TrendingUp },
@@ -124,7 +127,7 @@ function MonthlyChart({ data }: { data: ReturnType<typeof computeStats>["monthly
   );
 }
 
-function RecentFillUps({ rows }: { rows: typeof FILL_UPS }) {
+function RecentFillUps({ rows }: { rows: TripRow[] }) {
   return (
     <div className="panel p-5">
       <div className="flex items-center justify-between mb-4">
@@ -138,23 +141,23 @@ function RecentFillUps({ rows }: { rows: typeof FILL_UPS }) {
           <thead>
             <tr className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground text-left border-b border-border/60">
               <th className="pb-2 pr-4">Date</th>
-              <th className="pb-2 pr-4">Odo</th>
+              <th className="pb-2 pr-4">Miles</th>
               <th className="pb-2 pr-4">Gal</th>
               <th className="pb-2 pr-4">$/gal</th>
               <th className="pb-2 pr-4">Total</th>
-              <th className="pb-2">Location</th>
+              <th className="pb-2">Trip</th>
             </tr>
           </thead>
           <tbody>
             {rows.map((r) => (
               <tr key={r.id} className="border-b border-border/30 last:border-0">
                 <td className="py-2.5 pr-4 font-mono text-xs text-muted-foreground">{r.date}</td>
-                <td className="py-2.5 pr-4 font-mono">{r.odometer.toLocaleString()}</td>
+                <td className="py-2.5 pr-4 font-mono">{r.miles.toLocaleString()}</td>
                 <td className="py-2.5 pr-4 font-mono">{r.gallons.toFixed(1)}</td>
                 <td className="py-2.5 pr-4 font-mono text-muted-foreground">${r.pricePerGallon.toFixed(2)}</td>
                 <td className="py-2.5 pr-4 font-mono text-primary">${r.totalCost.toFixed(2)}</td>
                 <td className="py-2.5 text-muted-foreground flex items-center gap-1">
-                  <MapPin className="h-3 w-3" /> {r.location}
+                  <MapPin className="h-3 w-3" /> {r.trip || "—"}
                 </td>
               </tr>
             ))}
