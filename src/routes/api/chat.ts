@@ -1,6 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { DAGGER_VEHICLE, computeStats, type TripRow } from "@/lib/dagger-data";
-import { fetchTripRows } from "@/lib/sheet.server";
 
 type ChatMessage = { role: "user" | "assistant" | "system" | "tool"; content: string; tool_call_id?: string; tool_calls?: unknown };
 
@@ -89,6 +88,7 @@ export const Route = createFileRoute("/api/chat")({
 
         let rows: TripRow[] = [];
         try {
+          const { fetchTripRows } = await import("@/lib/sheet.server");
           rows = await fetchTripRows();
         } catch (e) {
           console.error("Failed to load trip rows for chat:", e);
