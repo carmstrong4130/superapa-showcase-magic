@@ -29,6 +29,7 @@ const LOCATIONS: TripLocation[] = [
   { key: "KAMAS", name: "Kamas", region: "UT", lat: 40.6416, lon: -111.2802 },
   { key: "LANDER", name: "Lander", region: "WY", lat: 42.8327, lon: -108.7307 },
   { key: "ARCO", name: "Arco", region: "ID", lat: 43.6345, lon: -113.3003 },
+  { key: "PINEDALE", name: "Pinedale", region: "WY", lat: 42.8666, lon: -109.8649 },
 ];
 
 export function resolveTripLocation(trip: string): TripLocation | undefined {
