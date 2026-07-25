@@ -24,6 +24,12 @@ const LOCATIONS: TripLocation[] = [
   { key: "OGDEN W.R.", name: "Ogden", region: "UT", lat: 41.223, lon: -111.9738 },
   { key: "SALT LAKE CITY", name: "Salt Lake City", region: "UT", lat: 40.7608, lon: -111.8910 },
   { key: "MOAB", name: "Moab", region: "UT", lat: 38.5733, lon: -109.5498 },
+  { key: "CASTLE DALE", name: "Castle Dale", region: "UT", lat: 39.2125, lon: -111.0196 },
+  { key: "ST GEORGE", name: "St. George", region: "UT", lat: 37.0965, lon: -113.5684 },
+  { key: "KAMAS", name: "Kamas", region: "UT", lat: 40.6416, lon: -111.2802 },
+  { key: "LANDER", name: "Lander", region: "WY", lat: 42.8327, lon: -108.7307 },
+  { key: "ARCO", name: "Arco", region: "ID", lat: 43.6345, lon: -113.3003 },
+  { key: "PINEDALE", name: "Pinedale", region: "WY", lat: 42.8666, lon: -109.8649 },
 ];
 
 export function resolveTripLocation(trip: string): TripLocation | undefined {
