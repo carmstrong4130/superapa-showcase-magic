@@ -1,9 +1,13 @@
 import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { CloudRain, CloudSnow, Cloud, Sun, CloudSun, CloudLightning, CloudFog, Loader2, MapPin } from "lucide-react";
-import { visitedLocations } from "@/lib/trip-locations";
 import { forecastQueryOptions } from "@/lib/weather.functions";
 import type { TripRow } from "@/lib/dagger-data";
+
+const FORECAST_LOCATIONS = [
+  { name: "Salt Lake City", region: "UT", lat: 40.7608, lon: -111.8910 },
+  { name: "Richfield", region: "UT", lat: 38.7725, lon: -112.0838 },
+];
 
 function iconFor(code: number) {
   if (code === 0) return Sun;
