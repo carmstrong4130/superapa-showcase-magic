@@ -7,7 +7,12 @@ import type { TripRow } from "@/lib/dagger-data";
 const FORECAST_LOCATIONS = [
   { name: "Salt Lake City", region: "UT", lat: 40.7608, lon: -111.8910 },
   { name: "Richfield", region: "UT", lat: 38.7725, lon: -112.0838 },
-  { name: "Moab", region: "UT", lat: 38.5733, lon: -109.5498 },
+  { name: "Castle Dale", region: "UT", lat: 39.2125, lon: -111.0196 },
+  { name: "Green River", region: "UT", lat: 38.9953, lon: -110.1596 },
+  { name: "St. George", region: "UT", lat: 37.0965, lon: -113.5684 },
+  { name: "Kamas", region: "UT", lat: 40.6416, lon: -111.2802 },
+  { name: "Lander", region: "WY", lat: 42.8327, lon: -108.7307 },
+  { name: "Arco", region: "ID", lat: 43.6345, lon: -113.3003 },
 ];
 
 function iconFor(code: number) {
