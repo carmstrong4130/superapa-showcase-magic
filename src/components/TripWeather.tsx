@@ -1,9 +1,14 @@
 import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { CloudRain, CloudSnow, Cloud, Sun, CloudSun, CloudLightning, CloudFog, Loader2, MapPin } from "lucide-react";
-import { visitedLocations } from "@/lib/trip-locations";
 import { forecastQueryOptions } from "@/lib/weather.functions";
 import type { TripRow } from "@/lib/dagger-data";
+
+const FORECAST_LOCATIONS = [
+  { name: "Salt Lake City", region: "UT", lat: 40.7608, lon: -111.8910 },
+  { name: "Richfield", region: "UT", lat: 38.7725, lon: -112.0838 },
+  { name: "Moab", region: "UT", lat: 38.5733, lon: -109.5498 },
+];
 
 function iconFor(code: number) {
   if (code === 0) return Sun;
@@ -23,11 +28,10 @@ function dayLabel(date: string, index: number) {
 }
 
 export function TripWeather({ rows }: { rows: TripRow[] }) {
-  const places = useMemo(() => visitedLocations(rows, 6), [rows]);
-  const points = useMemo(() => places.map((p) => ({ lat: p.lat, lon: p.lon })), [places]);
+  const points = useMemo(() => FORECAST_LOCATIONS.map((p) => ({ lat: p.lat, lon: p.lon })), [rows]);
   const { data, isLoading } = useQuery(forecastQueryOptions(points));
 
-  if (!places.length) return null;
+  if (!FORECAST_LOCATIONS.length) return null;
 
   return (
     <div className="panel p-5">
@@ -45,8 +49,8 @@ export function TripWeather({ rows }: { rows: TripRow[] }) {
         </div>
       )}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3">
-        {places.map((p) => {
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        {FORECAST_LOCATIONS.map((p) => {
           const fc = data?.find((f) => f.lat === p.lat && f.lon === p.lon);
           return (
             <div key={`${p.lat},${p.lon}`} className="rounded-lg border border-border/60 bg-surface-2 p-3">
@@ -56,9 +60,6 @@ export function TripWeather({ rows }: { rows: TripRow[] }) {
                     <MapPin className="h-3.5 w-3.5 shrink-0 text-primary" />
                     <span className="truncate font-semibold text-sm">{p.name}</span>
                     <span className="font-mono text-[10px] text-muted-foreground">{p.region}</span>
-                  </div>
-                  <div className="mt-0.5 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-                    {p.visits} {p.visits === 1 ? "visit" : "visits"} · last {p.lastVisit}
                   </div>
                 </div>
               </div>
