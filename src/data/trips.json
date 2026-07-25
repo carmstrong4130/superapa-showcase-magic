@@ -1,0 +1,1052 @@
+[
+ {
+  "id": "r1",
+  "date": "2024-04-06",
+  "miles": 276.0,
+  "gallons": 28.8,
+  "pricePerGallon": 4.19,
+  "totalCost": 120.78,
+  "trip": "",
+  "notes": ""
+ },
+ {
+  "id": "r2",
+  "date": "2024-04-12",
+  "miles": 138.7,
+  "gallons": 14.6,
+  "pricePerGallon": 4.09,
+  "totalCost": 59.95,
+  "trip": "",
+  "notes": ""
+ },
+ {
+  "id": "r3",
+  "date": "2024-04-12",
+  "miles": 179.4,
+  "gallons": 19.3,
+  "pricePerGallon": 4.22,
+  "totalCost": 81.45,
+  "trip": "",
+  "notes": ""
+ },
+ {
+  "id": "r4",
+  "date": "2024-04-18",
+  "miles": 338.4,
+  "gallons": 31.3,
+  "pricePerGallon": 4.13,
+  "totalCost": 129.3,
+  "trip": "GREEN RIVER",
+  "notes": ""
+ },
+ {
+  "id": "r5",
+  "date": "2024-04-20",
+  "miles": 255.5,
+  "gallons": 18.9,
+  "pricePerGallon": 4.3,
+  "totalCost": 81.35,
+  "trip": "",
+  "notes": ""
+ },
+ {
+  "id": "r6",
+  "date": "2024-04-25",
+  "miles": 400.8,
+  "gallons": 29.8,
+  "pricePerGallon": 4.14,
+  "totalCost": 123.67,
+  "trip": "",
+  "notes": ""
+ },
+ {
+  "id": "r7",
+  "date": "2024-05-10",
+  "miles": 245.6,
+  "gallons": 21.8,
+  "pricePerGallon": 4.12,
+  "totalCost": 90.01,
+  "trip": "JOE'S VALLEY",
+  "notes": ""
+ },
+ {
+  "id": "r8",
+  "date": "2024-05-10",
+  "miles": 141.4,
+  "gallons": 14.8,
+  "pricePerGallon": 3.7,
+  "totalCost": 54.98,
+  "trip": "GOOSEBERRY",
+  "notes": ""
+ },
+ {
+  "id": "r9",
+  "date": "2024-05-11",
+  "miles": 186.1,
+  "gallons": 21.3,
+  "pricePerGallon": 4.16,
+  "totalCost": 88.46,
+  "trip": "",
+  "notes": ""
+ },
+ {
+  "id": "r10",
+  "date": "2024-05-11",
+  "miles": 141.2,
+  "gallons": 18.5,
+  "pricePerGallon": 4.4,
+  "totalCost": 81.55,
+  "trip": "",
+  "notes": ""
+ },
+ {
+  "id": "r11",
+  "date": "2024-05-14",
+  "miles": 194.8,
+  "gallons": 23.5,
+  "pricePerGallon": 3.79,
+  "totalCost": 89.23,
+  "trip": "",
+  "notes": ""
+ },
+ {
+  "id": "r12",
+  "date": "2024-05-21",
+  "miles": 383.7,
+  "gallons": 31.2,
+  "pricePerGallon": 3.77,
+  "totalCost": 117.62,
+  "trip": "",
+  "notes": ""
+ },
+ {
+  "id": "r13",
+  "date": "2024-05-30",
+  "miles": 271.2,
+  "gallons": 22.0,
+  "pricePerGallon": 3.67,
+  "totalCost": 80.88,
+  "trip": "",
+  "notes": ""
+ },
+ {
+  "id": "r14",
+  "date": "2024-06-02",
+  "miles": 173.9,
+  "gallons": 19.6,
+  "pricePerGallon": 3.86,
+  "totalCost": 75.29,
+  "trip": "RICHFIELD",
+  "notes": ""
+ },
+ {
+  "id": "r15",
+  "date": "2024-06-06",
+  "miles": 319.0,
+  "gallons": 29.1,
+  "pricePerGallon": 3.9,
+  "totalCost": 113.52,
+  "trip": "",
+  "notes": ""
+ },
+ {
+  "id": "r16",
+  "date": "2024-06-14",
+  "miles": 275.5,
+  "gallons": 25.5,
+  "pricePerGallon": 3.41,
+  "totalCost": 86.88,
+  "trip": "WILD I",
+  "notes": ""
+ },
+ {
+  "id": "r17",
+  "date": "2024-06-14",
+  "miles": 213.0,
+  "gallons": 21.8,
+  "pricePerGallon": 3.69,
+  "totalCost": 80.68,
+  "trip": "",
+  "notes": ""
+ },
+ {
+  "id": "r18",
+  "date": "2024-06-16",
+  "miles": 113.2,
+  "gallons": 13.3,
+  "pricePerGallon": 3.69,
+  "totalCost": 49.06,
+  "trip": "",
+  "notes": ""
+ },
+ {
+  "id": "r19",
+  "date": "2024-06-18",
+  "miles": 247.6,
+  "gallons": 27.3,
+  "pricePerGallon": 3.36,
+  "totalCost": 91.82,
+  "trip": "",
+  "notes": ""
+ },
+ {
+  "id": "r20",
+  "date": "2024-06-26",
+  "miles": 369.2,
+  "gallons": 28.9,
+  "pricePerGallon": 3.75,
+  "totalCost": 108.36,
+  "trip": "",
+  "notes": ""
+ },
+ {
+  "id": "r21",
+  "date": "2024-06-28",
+  "miles": 243.2,
+  "gallons": 26.9,
+  "pricePerGallon": 3.7,
+  "totalCost": 99.28,
+  "trip": "WILD I",
+  "notes": ""
+ },
+ {
+  "id": "r22",
+  "date": "2024-06-30",
+  "miles": 110.6,
+  "gallons": 13.1,
+  "pricePerGallon": 3.7,
+  "totalCost": 48.53,
+  "trip": "",
+  "notes": ""
+ },
+ {
+  "id": "r23",
+  "date": "2024-07-02",
+  "miles": 287.9,
+  "gallons": 29.3,
+  "pricePerGallon": 3.85,
+  "totalCost": 112.95,
+  "trip": "",
+  "notes": ""
+ },
+ {
+  "id": "r24",
+  "date": "2024-07-16",
+  "miles": 319.3,
+  "gallons": 29.9,
+  "pricePerGallon": 3.9,
+  "totalCost": 116.58,
+  "trip": "",
+  "notes": ""
+ },
+ {
+  "id": "r25",
+  "date": "2024-07-21",
+  "miles": 328.6,
+  "gallons": 30.3,
+  "pricePerGallon": 3.86,
+  "totalCost": 117.05,
+  "trip": "",
+  "notes": ""
+ },
+ {
+  "id": "r26",
+  "date": "2024-08-01",
+  "miles": 358.7,
+  "gallons": 28.1,
+  "pricePerGallon": 3.89,
+  "totalCost": 109.39,
+  "trip": "",
+  "notes": ""
+ },
+ {
+  "id": "r27",
+  "date": "2024-08-02",
+  "miles": 223.9,
+  "gallons": 17.8,
+  "pricePerGallon": 3.8,
+  "totalCost": 67.8,
+  "trip": "WILD I",
+  "notes": ""
+ },
+ {
+  "id": "r28",
+  "date": "2024-08-04",
+  "miles": 113.3,
+  "gallons": 13.0,
+  "pricePerGallon": 3.8,
+  "totalCost": 49.44,
+  "trip": "",
+  "notes": ""
+ },
+ {
+  "id": "r29",
+  "date": "2024-08-06",
+  "miles": 279.6,
+  "gallons": 30.0,
+  "pricePerGallon": 3.85,
+  "totalCost": 115.59,
+  "trip": "",
+  "notes": ""
+ },
+ {
+  "id": "r30",
+  "date": "2024-08-15",
+  "miles": 237.5,
+  "gallons": 23.0,
+  "pricePerGallon": 4.0,
+  "totalCost": 92.22,
+  "trip": "",
+  "notes": ""
+ },
+ {
+  "id": "r31",
+  "date": "2024-08-16",
+  "miles": 209.5,
+  "gallons": 21.5,
+  "pricePerGallon": 3.8,
+  "totalCost": 81.7,
+  "trip": "WILD I",
+  "notes": ""
+ },
+ {
+  "id": "r32",
+  "date": "2024-08-17",
+  "miles": 118.6,
+  "gallons": 11.9,
+  "pricePerGallon": 3.8,
+  "totalCost": 45.33,
+  "trip": "",
+  "notes": ""
+ },
+ {
+  "id": "r33",
+  "date": "2024-08-18",
+  "miles": 209.8,
+  "gallons": 18.3,
+  "pricePerGallon": 4.1,
+  "totalCost": 75.0,
+  "trip": "",
+  "notes": ""
+ },
+ {
+  "id": "r34",
+  "date": "2024-09-01",
+  "miles": 309.0,
+  "gallons": 31.4,
+  "pricePerGallon": 3.67,
+  "totalCost": 115.17,
+  "trip": "",
+  "notes": ""
+ },
+ {
+  "id": "r35",
+  "date": "2024-09-10",
+  "miles": 332.4,
+  "gallons": 26.6,
+  "pricePerGallon": 3.73,
+  "totalCost": 99.03,
+  "trip": "",
+  "notes": ""
+ },
+ {
+  "id": "r36",
+  "date": "2024-09-18",
+  "miles": 298.1,
+  "gallons": 26.3,
+  "pricePerGallon": 4.13,
+  "totalCost": 108.68,
+  "trip": "RICHFIELD",
+  "notes": ""
+ },
+ {
+  "id": "r37",
+  "date": "2024-09-22",
+  "miles": 218.5,
+  "gallons": 21.3,
+  "pricePerGallon": 3.85,
+  "totalCost": 81.87,
+  "trip": "",
+  "notes": ""
+ },
+ {
+  "id": "r38",
+  "date": "2024-09-27",
+  "miles": 317.9,
+  "gallons": 32.8,
+  "pricePerGallon": 4.2,
+  "totalCost": 137.65,
+  "trip": "RICHFIELD",
+  "notes": ""
+ },
+ {
+  "id": "r39",
+  "date": "2024-09-29",
+  "miles": 216.6,
+  "gallons": 22.0,
+  "pricePerGallon": 3.65,
+  "totalCost": 80.21,
+  "trip": "",
+  "notes": ""
+ },
+ {
+  "id": "r40",
+  "date": "2024-10-04",
+  "miles": 398.8,
+  "gallons": 19.2,
+  "pricePerGallon": 3.9,
+  "totalCost": 75.0,
+  "trip": "",
+  "notes": ""
+ },
+ {
+  "id": "r41",
+  "date": "2024-10-07",
+  "miles": 277.0,
+  "gallons": 29.6,
+  "pricePerGallon": 3.57,
+  "totalCost": 105.58,
+  "trip": "",
+  "notes": ""
+ },
+ {
+  "id": "r42",
+  "date": "2024-10-10",
+  "miles": 327.8,
+  "gallons": 23.9,
+  "pricePerGallon": 3.67,
+  "totalCost": 87.82,
+  "trip": "",
+  "notes": ""
+ },
+ {
+  "id": "r43",
+  "date": "2024-10-13",
+  "miles": 190.7,
+  "gallons": 22.7,
+  "pricePerGallon": 3.71,
+  "totalCost": 84.2,
+  "trip": "RICHFIELD",
+  "notes": ""
+ },
+ {
+  "id": "r44",
+  "date": "2024-10-18",
+  "miles": 326.7,
+  "gallons": 31.2,
+  "pricePerGallon": 3.62,
+  "totalCost": 113.04,
+  "trip": "",
+  "notes": ""
+ },
+ {
+  "id": "r45",
+  "date": "2024-10-25",
+  "miles": 295.3,
+  "gallons": 28.5,
+  "pricePerGallon": 3.61,
+  "totalCost": 102.96,
+  "trip": "",
+  "notes": ""
+ },
+ {
+  "id": "r46",
+  "date": "2024-11-01",
+  "miles": 336.3,
+  "gallons": 32.2,
+  "pricePerGallon": 3.56,
+  "totalCost": 114.27,
+  "trip": "",
+  "notes": ""
+ },
+ {
+  "id": "r47",
+  "date": "2024-11-19",
+  "miles": 335.6,
+  "gallons": 32.1,
+  "pricePerGallon": 3.4,
+  "totalCost": 109.09,
+  "trip": "",
+  "notes": ""
+ },
+ {
+  "id": "r48",
+  "date": "2024-12-01",
+  "miles": 314.1,
+  "gallons": 29.1,
+  "pricePerGallon": 3.38,
+  "totalCost": 98.3,
+  "trip": "WOODWARD",
+  "notes": ""
+ },
+ {
+  "id": "r49",
+  "date": "2024-12-11",
+  "miles": 391.1,
+  "gallons": 32.0,
+  "pricePerGallon": 3.16,
+  "totalCost": 101.24,
+  "trip": "",
+  "notes": ""
+ },
+ {
+  "id": "r50",
+  "date": "2024-12-21",
+  "miles": 308.9,
+  "gallons": 25.6,
+  "pricePerGallon": 3.05,
+  "totalCost": 78.16,
+  "trip": "",
+  "notes": ""
+ },
+ {
+  "id": "r51",
+  "date": "2024-12-21",
+  "miles": 245.0,
+  "gallons": 17.8,
+  "pricePerGallon": 3.16,
+  "totalCost": 56.24,
+  "trip": "VEGAS",
+  "notes": ""
+ },
+ {
+  "id": "r52",
+  "date": "2024-12-25",
+  "miles": 260.7,
+  "gallons": 20.5,
+  "pricePerGallon": 4.1,
+  "totalCost": 84.24,
+  "trip": "",
+  "notes": ""
+ },
+ {
+  "id": "r53",
+  "date": "2024-12-25",
+  "miles": 285.7,
+  "gallons": 23.7,
+  "pricePerGallon": 2.98,
+  "totalCost": 70.72,
+  "trip": "",
+  "notes": ""
+ },
+ {
+  "id": "r54",
+  "date": "2024-12-31",
+  "miles": 347.0,
+  "gallons": 31.7,
+  "pricePerGallon": 3.19,
+  "totalCost": 101.41,
+  "trip": "",
+  "notes": ""
+ },
+ {
+  "id": "r55",
+  "date": "2025-01-17",
+  "miles": 191.9,
+  "gallons": 14.8,
+  "pricePerGallon": 3.38,
+  "totalCost": 44.92,
+  "trip": "",
+  "notes": ""
+ },
+ {
+  "id": "r56",
+  "date": "2025-01-19",
+  "miles": 296.7,
+  "gallons": 14.0,
+  "pricePerGallon": 3.56,
+  "totalCost": 50.0,
+  "trip": "MOE'S VALLEY",
+  "notes": ""
+ },
+ {
+  "id": "r57",
+  "date": "2025-01-24",
+  "miles": 271.8,
+  "gallons": 31.6,
+  "pricePerGallon": 3.07,
+  "totalCost": 96.91,
+  "trip": "",
+  "notes": ""
+ },
+ {
+  "id": "r58",
+  "date": "2025-02-06",
+  "miles": 187.7,
+  "gallons": 18.9,
+  "pricePerGallon": 3.22,
+  "totalCost": 60.73,
+  "trip": "",
+  "notes": ""
+ },
+ {
+  "id": "r59",
+  "date": "2025-02-07",
+  "miles": 214.4,
+  "gallons": 16.6,
+  "pricePerGallon": 3.55,
+  "totalCost": 59.02,
+  "trip": "",
+  "notes": ""
+ },
+ {
+  "id": "r60",
+  "date": "2025-02-09",
+  "miles": 116.0,
+  "gallons": 8.7,
+  "pricePerGallon": 3.38,
+  "totalCost": 29.29,
+  "trip": "",
+  "notes": ""
+ },
+ {
+  "id": "r61",
+  "date": "2025-02-16",
+  "miles": 385.8,
+  "gallons": 31.7,
+  "pricePerGallon": 3.26,
+  "totalCost": 102.95,
+  "trip": "MOE'S VALLEY",
+  "notes": ""
+ },
+ {
+  "id": "r62",
+  "date": "2025-02-26",
+  "miles": 440.2,
+  "gallons": 31.8,
+  "pricePerGallon": 3.2,
+  "totalCost": 101.78,
+  "trip": "JOE'S",
+  "notes": ""
+ },
+ {
+  "id": "r63",
+  "date": "2025-03-03",
+  "miles": 348.5,
+  "gallons": 23.4,
+  "pricePerGallon": 3.05,
+  "totalCost": 71.77,
+  "trip": "JOE'S",
+  "notes": ""
+ },
+ {
+  "id": "r64",
+  "date": "2025-03-12",
+  "miles": 361.1,
+  "gallons": 28.0,
+  "pricePerGallon": 3.3,
+  "totalCost": 92.43,
+  "trip": "JOE'S",
+  "notes": ""
+ },
+ {
+  "id": "r65",
+  "date": "2025-03-22",
+  "miles": 435.8,
+  "gallons": 32.6,
+  "pricePerGallon": 3.5,
+  "totalCost": 114.14,
+  "trip": "JOE'S",
+  "notes": ""
+ },
+ {
+  "id": "r66",
+  "date": "2025-03-29",
+  "miles": 262.7,
+  "gallons": 20.2,
+  "pricePerGallon": 3.6,
+  "totalCost": 72.8,
+  "trip": "",
+  "notes": ""
+ },
+ {
+  "id": "r67",
+  "date": "2025-04-20",
+  "miles": 295.4,
+  "gallons": 28.7,
+  "pricePerGallon": 3.22,
+  "totalCost": 92.48,
+  "trip": "",
+  "notes": ""
+ },
+ {
+  "id": "r68",
+  "date": "2025-04-24",
+  "miles": 167.5,
+  "gallons": 12.4,
+  "pricePerGallon": 3.55,
+  "totalCost": 44.03,
+  "trip": "",
+  "notes": ""
+ },
+ {
+  "id": "r69",
+  "date": "2025-04-26",
+  "miles": 233.8,
+  "gallons": 24.4,
+  "pricePerGallon": 3.96,
+  "totalCost": 92.29,
+  "trip": "RICHFIELD",
+  "notes": ""
+ },
+ {
+  "id": "r70",
+  "date": "2025-05-03",
+  "miles": 331.7,
+  "gallons": 32.2,
+  "pricePerGallon": 3.6,
+  "totalCost": 115.64,
+  "trip": "",
+  "notes": ""
+ },
+ {
+  "id": "r71",
+  "date": "2025-05-10",
+  "miles": 269.5,
+  "gallons": 25.3,
+  "pricePerGallon": 3.7,
+  "totalCost": 93.59,
+  "trip": "RICHFIELD",
+  "notes": ""
+ },
+ {
+  "id": "r72",
+  "date": "2025-05-14",
+  "miles": 212.3,
+  "gallons": 21.2,
+  "pricePerGallon": 3.6,
+  "totalCost": 76.26,
+  "trip": "",
+  "notes": ""
+ },
+ {
+  "id": "r73",
+  "date": "2025-05-17",
+  "miles": 301.7,
+  "gallons": 28.7,
+  "pricePerGallon": 3.4,
+  "totalCost": 97.49,
+  "trip": "RICHFIELD",
+  "notes": ""
+ },
+ {
+  "id": "r74",
+  "date": "2025-05-25",
+  "miles": 285.4,
+  "gallons": 29.7,
+  "pricePerGallon": 3.7,
+  "totalCost": 109.89,
+  "trip": "",
+  "notes": ""
+ },
+ {
+  "id": "r75",
+  "date": "2025-05-29",
+  "miles": 315.8,
+  "gallons": 29.6,
+  "pricePerGallon": 3.6,
+  "totalCost": 106.65,
+  "trip": "",
+  "notes": ""
+ },
+ {
+  "id": "r76",
+  "date": "2025-06-06",
+  "miles": 320.6,
+  "gallons": 30.4,
+  "pricePerGallon": 3.58,
+  "totalCost": 108.75,
+  "trip": "",
+  "notes": ""
+ },
+ {
+  "id": "r77",
+  "date": "2025-06-15",
+  "miles": 298.8,
+  "gallons": 31.4,
+  "pricePerGallon": 3.66,
+  "totalCost": 114.87,
+  "trip": "RICHFIELD",
+  "notes": ""
+ },
+ {
+  "id": "r78",
+  "date": "2025-06-23",
+  "miles": 275.8,
+  "gallons": 22.9,
+  "pricePerGallon": 3.73,
+  "totalCost": 84.87,
+  "trip": "",
+  "notes": ""
+ },
+ {
+  "id": "r79",
+  "date": "2025-07-13",
+  "miles": 341.5,
+  "gallons": 33.3,
+  "pricePerGallon": 3.56,
+  "totalCost": 118.39,
+  "trip": "",
+  "notes": ""
+ },
+ {
+  "id": "r80",
+  "date": "2025-07-21",
+  "miles": 244.1,
+  "gallons": 21.7,
+  "pricePerGallon": 3.7,
+  "totalCost": 80.45,
+  "trip": "",
+  "notes": ""
+ },
+ {
+  "id": "r81",
+  "date": "2025-08-09",
+  "miles": 366.2,
+  "gallons": 32.6,
+  "pricePerGallon": 3.59,
+  "totalCost": 116.93,
+  "trip": "",
+  "notes": ""
+ },
+ {
+  "id": "r82",
+  "date": "2025-08-26",
+  "miles": 310.4,
+  "gallons": 27.7,
+  "pricePerGallon": 3.6,
+  "totalCost": 99.89,
+  "trip": "",
+  "notes": ""
+ },
+ {
+  "id": "r83",
+  "date": "2025-09-17",
+  "miles": 261.5,
+  "gallons": 25.6,
+  "pricePerGallon": 3.65,
+  "totalCost": 93.35,
+  "trip": "",
+  "notes": ""
+ },
+ {
+  "id": "r84",
+  "date": "2025-09-18",
+  "miles": 393.4,
+  "gallons": 24.3,
+  "pricePerGallon": 3.7,
+  "totalCost": 89.92,
+  "trip": "CO",
+  "notes": ""
+ },
+ {
+  "id": "r85",
+  "date": "2025-09-22",
+  "miles": 449.9,
+  "gallons": 29.6,
+  "pricePerGallon": 3.6,
+  "totalCost": 106.58,
+  "trip": "",
+  "notes": ""
+ },
+ {
+  "id": "r86",
+  "date": "2025-09-22",
+  "miles": 335.7,
+  "gallons": 22.8,
+  "pricePerGallon": 3.8,
+  "totalCost": 88.47,
+  "trip": "",
+  "notes": ""
+ },
+ {
+  "id": "r87",
+  "date": "2025-09-28",
+  "miles": 272.7,
+  "gallons": 22.1,
+  "pricePerGallon": 3.58,
+  "totalCost": 79.01,
+  "trip": "",
+  "notes": ""
+ },
+ {
+  "id": "r88",
+  "date": "2025-10-25",
+  "miles": 350.2,
+  "gallons": 32.3,
+  "pricePerGallon": 3.53,
+  "totalCost": 114.1,
+  "trip": "",
+  "notes": ""
+ },
+ {
+  "id": "r89",
+  "date": "2025-11-25",
+  "miles": 332.6,
+  "gallons": 32.3,
+  "pricePerGallon": 3.19,
+  "totalCost": 102.36,
+  "trip": "",
+  "notes": ""
+ },
+ {
+  "id": "r90",
+  "date": "2025-12-18",
+  "miles": 250.6,
+  "gallons": 24.4,
+  "pricePerGallon": 2.71,
+  "totalCost": 65.58,
+  "trip": "",
+  "notes": ""
+ },
+ {
+  "id": "r91",
+  "date": "2026-01-07",
+  "miles": 323.6,
+  "gallons": 28.2,
+  "pricePerGallon": 2.48,
+  "totalCost": 70.1,
+  "trip": "",
+  "notes": ""
+ },
+ {
+  "id": "r92",
+  "date": "2026-02-03",
+  "miles": 310.3,
+  "gallons": 31.6,
+  "pricePerGallon": 2.97,
+  "totalCost": 93.68,
+  "trip": "",
+  "notes": ""
+ },
+ {
+  "id": "r93",
+  "date": "2026-03-01",
+  "miles": 352.0,
+  "gallons": 31.1,
+  "pricePerGallon": 3.06,
+  "totalCost": 95.0,
+  "trip": "",
+  "notes": ""
+ },
+ {
+  "id": "r94",
+  "date": "2026-03-14",
+  "miles": 448.5,
+  "gallons": 33.7,
+  "pricePerGallon": 3.85,
+  "totalCost": 129.83,
+  "trip": "JOE'S",
+  "notes": ""
+ },
+ {
+  "id": "r95",
+  "date": "2026-04-19",
+  "miles": 354.5,
+  "gallons": 32.1,
+  "pricePerGallon": 4.45,
+  "totalCost": 142.78,
+  "trip": "",
+  "notes": ""
+ },
+ {
+  "id": "r96",
+  "date": "2026-05-14",
+  "miles": 349.7,
+  "gallons": 32.8,
+  "pricePerGallon": 4.85,
+  "totalCost": 159.02,
+  "trip": "",
+  "notes": ""
+ },
+ {
+  "id": "r97",
+  "date": "2026-06-05",
+  "miles": 286.0,
+  "gallons": 23.2,
+  "pricePerGallon": 4.56,
+  "totalCost": 105.69,
+  "trip": "STRAWBERRY",
+  "notes": ""
+ },
+ {
+  "id": "r98",
+  "date": "2026-06-10",
+  "miles": 200.6,
+  "gallons": 19.9,
+  "pricePerGallon": 4.65,
+  "totalCost": 92.69,
+  "trip": "",
+  "notes": ""
+ },
+ {
+  "id": "r99",
+  "date": "2026-06-20",
+  "miles": 231.8,
+  "gallons": 23.6,
+  "pricePerGallon": 4.2,
+  "totalCost": 98.5,
+  "trip": "",
+  "notes": ""
+ },
+ {
+  "id": "r100",
+  "date": "2026-07-03",
+  "miles": 175.8,
+  "gallons": 16.6,
+  "pricePerGallon": 3.97,
+  "totalCost": 66.51,
+  "trip": "OGDEN W.R.",
+  "notes": ""
+ },
+ {
+  "id": "r101",
+  "date": "2026-07-11",
+  "miles": 352.3,
+  "gallons": 23.8,
+  "pricePerGallon": 4.3,
+  "totalCost": 102.18,
+  "trip": "",
+  "notes": ""
+ },
+ {
+  "id": "r102",
+  "date": "2026-07-19",
+  "miles": 241.5,
+  "gallons": 21.6,
+  "pricePerGallon": 4.6,
+  "totalCost": 99.41,
+  "trip": "",
+  "notes": ""
+ },
+ {
+  "id": "r103",
+  "date": "2026-07-19",
+  "miles": 441.9,
+  "gallons": 30.2,
+  "pricePerGallon": 4.96,
+  "totalCost": 150.0,
+  "trip": "CA / VEGAS",
+  "notes": ""
+ },
+ {
+  "id": "r104",
+  "date": "2026-07-22",
+  "miles": 213.2,
+  "gallons": 17.9,
+  "pricePerGallon": 5.16,
+  "totalCost": 92.58,
+  "trip": "",
+  "notes": ""
+ },
+ {
+  "id": "r105",
+  "date": "2026-07-23",
+  "miles": 399.2,
+  "gallons": 29.7,
+  "pricePerGallon": 4.86,
+  "totalCost": 144.35,
+  "trip": "",
+  "notes": ""
+ }
+]
