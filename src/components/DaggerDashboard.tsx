@@ -4,7 +4,7 @@ import { buildMonthlyLog, computeStats, DAGGER_VEHICLE, type YearGroup } from "@
 import { tripRowsQueryOptions } from "@/lib/sheet.functions";
 import { TripWeather } from "@/components/TripWeather";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis, Line, LineChart } from "recharts";
-import { Fuel, Gauge, DollarSign, TrendingUp, Send, Sparkles, Loader2 } from "lucide-react";
+import { Fuel, Gauge, DollarSign, TrendingUp, Send, Sparkles, Loader2, ChevronRight } from "lucide-react";
 
 
 type Msg = { role: "user" | "assistant"; content: string };
@@ -129,12 +129,15 @@ function MonthlyChart({ data }: { data: ReturnType<typeof computeStats>["monthly
 
 function MonthlyLog({ groups }: { groups: YearGroup[] }) {
   const cell = "py-2.5 pr-4 font-mono";
+  const [open, setOpen] = useState<Record<string, boolean>>({});
+  const toggle = (year: string | number) =>
+    setOpen((prev) => ({ ...prev, [String(year)]: !prev[String(year)] }));
   return (
     <div className="panel p-5">
       <div className="flex items-center justify-between mb-4">
         <div>
           <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Log</div>
-          <h2 className="text-lg font-semibold">Monthly Totals</h2>
+          <h2 className="text-lg font-semibold">Annual Totals</h2>
         </div>
         <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
           Apr 2024 &rarr; Present
@@ -144,7 +147,7 @@ function MonthlyLog({ groups }: { groups: YearGroup[] }) {
         <table className="w-full text-sm">
           <thead>
             <tr className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground text-left border-b border-border/60">
-              <th className="pb-2 pr-4">Month</th>
+              <th className="pb-2 pr-4">Year</th>
               <th className="pb-2 pr-4">Miles</th>
               <th className="pb-2 pr-4">Gal</th>
               <th className="pb-2 pr-4">Fuel Cost</th>
@@ -154,50 +157,60 @@ function MonthlyLog({ groups }: { groups: YearGroup[] }) {
             </tr>
           </thead>
           <tbody>
-            {groups.map((g) => (
-              <Fragment key={g.year}>
-                <tr>
-                  <td colSpan={7} className="pt-4 pb-1">
-                    <div className="flex items-center gap-3">
-                      <span className="font-mono text-[11px] font-bold tracking-widest text-primary">{g.year}</span>
-                      <span className="h-px flex-1 bg-border/60" />
-                    </div>
-                  </td>
-                </tr>
-                {g.months.map((r) => (
+            {groups.map((g) => {
+              const isOpen = !!open[String(g.year)];
+              return (
+                <Fragment key={g.year}>
                   <tr
-                    key={r.month}
-                    className={`border-b border-border/30 ${r.fillUps === 0 ? "text-muted-foreground/50" : ""}`}
+                    className="border-b border-border/60 bg-primary/5 cursor-pointer hover:bg-primary/10 transition-colors"
+                    onClick={() => toggle(g.year)}
                   >
-                    <td className={`${cell} text-xs text-muted-foreground`}>{r.label}</td>
-                    <td className={cell}>{Math.round(r.miles).toLocaleString()}</td>
-                    <td className={cell}>{Math.round(r.gallons).toLocaleString()}</td>
-                    <td className={`${cell} ${r.fillUps ? "text-primary" : ""}`}>
-                      ${Math.round(r.cost).toLocaleString()}
+                    <td className={`${cell}`}>
+                      <button
+                        type="button"
+                        aria-expanded={isOpen}
+                        aria-label={`Toggle ${g.year} monthly totals`}
+                        className="flex items-center gap-2 font-mono text-[11px] font-bold tracking-widest text-primary"
+                      >
+                        <ChevronRight
+                          className={`h-3.5 w-3.5 transition-transform ${isOpen ? "rotate-90" : ""}`}
+                        />
+                        {g.year}
+                      </button>
                     </td>
-                    <td className={cell}>{r.mpg ? Math.round(r.mpg).toLocaleString() : "—"}</td>
-                    <td className={cell}>{r.fillUps || "—"}</td>
-                    <td className="py-2.5 font-mono">{r.trips || "—"}</td>
+                    <td className={`${cell} font-semibold`}>{Math.round(g.totals.miles).toLocaleString()}</td>
+                    <td className={`${cell} font-semibold`}>{Math.round(g.totals.gallons).toLocaleString()}</td>
+                    <td className={`${cell} font-semibold text-primary`}>
+                      ${Math.round(g.totals.cost).toLocaleString()}
+                    </td>
+                    <td className={`${cell} font-semibold`}>{g.totals.mpg ? Math.round(g.totals.mpg).toLocaleString() : "—"}</td>
+                    <td className={`${cell} font-semibold`}>{g.totals.fillUps || "—"}</td>
+                    <td className="py-2.5 font-mono font-semibold">{g.totals.trips || "—"}</td>
                   </tr>
-                ))}
-                <tr className="border-b-2 border-border/60 bg-primary/5">
-                  <td className={`${cell} text-[11px] uppercase tracking-widest text-muted-foreground`}>
-                    {g.year} Total
-                  </td>
-                  <td className={`${cell} font-semibold`}>{Math.round(g.totals.miles).toLocaleString()}</td>
-                  <td className={`${cell} font-semibold`}>{Math.round(g.totals.gallons).toLocaleString()}</td>
-                  <td className={`${cell} font-semibold text-primary`}>
-                    ${Math.round(g.totals.cost).toLocaleString()}
-                  </td>
-                  <td className={`${cell} font-semibold`}>{g.totals.mpg ? Math.round(g.totals.mpg).toLocaleString() : "—"}</td>
-                  <td className={`${cell} font-semibold`}>{g.totals.fillUps || "—"}</td>
-                  <td className="py-2.5 font-mono font-semibold">{g.totals.trips || "—"}</td>
-                </tr>
-              </Fragment>
-            ))}
+                  {isOpen &&
+                    g.months.map((r) => (
+                      <tr
+                        key={r.month}
+                        className={`border-b border-border/30 ${r.fillUps === 0 ? "text-muted-foreground/50" : ""}`}
+                      >
+                        <td className={`${cell} pl-6 text-xs text-muted-foreground`}>{r.label}</td>
+                        <td className={cell}>{Math.round(r.miles).toLocaleString()}</td>
+                        <td className={cell}>{Math.round(r.gallons).toLocaleString()}</td>
+                        <td className={`${cell} ${r.fillUps ? "text-primary" : ""}`}>
+                          ${Math.round(r.cost).toLocaleString()}
+                        </td>
+                        <td className={cell}>{r.mpg ? Math.round(r.mpg).toLocaleString() : "—"}</td>
+                        <td className={cell}>{r.fillUps || "—"}</td>
+                        <td className="py-2.5 font-mono">{r.trips || "—"}</td>
+                      </tr>
+                    ))}
+                </Fragment>
+              );
+            })}
           </tbody>
         </table>
       </div>
+
     </div>
   );
 }
