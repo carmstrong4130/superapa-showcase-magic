@@ -74,7 +74,7 @@ ${JSON.stringify(DAGGER_VEHICLE)}
 ## Summary stats
 ${JSON.stringify(stats, null, 2)}
 
-## Raw trip log rows (${rows.length} rows, live from Google Sheets)
+## Raw trip log rows (${rows.length} rows, from the SuperApa data file)
 ${JSON.stringify(rows)}`;
 }
 

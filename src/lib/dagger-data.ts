@@ -1,4 +1,4 @@
-// Data model for Dagger's trip/fuel log. Rows come live from Google Sheets.
+// Data model for Dagger's trip/fuel log. Rows come from src/data/trips.json.
 
 export type TripRow = {
   id: string;
