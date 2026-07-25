@@ -38,12 +38,12 @@ export function DaggerDashboard() {
             <StatGrid stats={stats} />
             <MonthlyChart data={stats.monthly} />
             <MonthlyLog groups={monthlyLog} />
+            <TripWeather rows={rows} />
           </div>
 
-          {/* Right: 1/3 chat + weather */}
-          <div className="lg:col-span-1 space-y-6">
+          {/* Right: 1/3 chat */}
+          <div className="lg:col-span-1">
             <Chatbot />
-            <TripWeather rows={rows} />
           </div>
         </div>
       </div>
