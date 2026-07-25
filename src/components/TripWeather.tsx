@@ -13,7 +13,6 @@ const FORECAST_LOCATIONS = [
   { name: "Kamas", region: "UT", lat: 40.6416, lon: -111.2802 },
   { name: "Lander", region: "WY", lat: 42.8327, lon: -108.7307 },
   { name: "Arco", region: "ID", lat: 43.6345, lon: -113.3003 },
-  { name: "Pinedale", region: "WY", lat: 42.8666, lon: -109.8649 },
 ];
 
 function iconFor(code: number) {
