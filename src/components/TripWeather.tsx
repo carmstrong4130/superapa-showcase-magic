@@ -1,7 +1,6 @@
-import { useMemo } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { CloudRain, CloudSnow, Cloud, Sun, CloudSun, CloudLightning, CloudFog, Loader2, MapPin } from "lucide-react";
-import { forecastQueryOptions } from "@/lib/weather.functions";
+import { useQuery } from "@tanstack/react-query";
+import { forecastQueryOptions } from "@/lib/weather";
 import type { TripRow } from "@/lib/dagger-data";
 
 const FORECAST_LOCATIONS = [
@@ -32,11 +31,51 @@ function dayLabel(date: string, index: number) {
   return d.toLocaleDateString("en-US", { weekday: "short" });
 }
 
-export function TripWeather({ rows }: { rows: TripRow[] }) {
-  const points = useMemo(() => FORECAST_LOCATIONS.map((p) => ({ lat: p.lat, lon: p.lon })), [rows]);
-  const { data, isLoading } = useQuery(forecastQueryOptions(points));
+function LocationCard({ name, region, lat, lon }: { name: string; region: string; lat: number; lon: number }) {
+  const { data, isLoading, isError } = useQuery(forecastQueryOptions(lat, lon));
 
-  if (!FORECAST_LOCATIONS.length) return null;
+  return (
+    <div className="rounded-lg border border-border/60 bg-surface-2 p-3">
+      <div className="flex items-center gap-1.5">
+        <MapPin className="h-3.5 w-3.5 shrink-0 text-primary" />
+        <span className="truncate font-semibold text-sm">{name}</span>
+        <span className="font-mono text-[10px] text-muted-foreground">{region}</span>
+      </div>
+
+      <div className="mt-3 grid grid-cols-4 gap-1">
+        {(data ?? []).map((d, i) => {
+          const Icon = iconFor(d.code);
+          return (
+            <div key={d.date} className="rounded-md bg-background/40 px-1 py-2 text-center">
+              <div className="font-mono text-[9px] uppercase tracking-wider text-muted-foreground">
+                {dayLabel(d.date, i)}
+              </div>
+              <Icon className="mx-auto my-1 h-4 w-4 text-primary" />
+              <div className="font-mono text-xs font-semibold">{d.high}°</div>
+              <div className="font-mono text-[10px] text-muted-foreground">{d.low}°</div>
+              {d.precipChance > 0 && <div className="font-mono text-[9px] text-sky-400">{d.precipChance}%</div>}
+            </div>
+          );
+        })}
+
+        {isLoading && !data && (
+          <div className="col-span-4 flex items-center justify-center gap-2 py-2 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+            <Loader2 className="h-3 w-3 animate-spin" /> Loading
+          </div>
+        )}
+
+        {isError && !data && (
+          <div className="col-span-4 py-2 text-center font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+            Forecast unavailable
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+export function TripWeather({ rows }: { rows: TripRow[] }) {
+  void rows;
 
   return (
     <div className="panel p-5">
@@ -48,53 +87,10 @@ export function TripWeather({ rows }: { rows: TripRow[] }) {
         <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Next 4 days</div>
       </div>
 
-      {isLoading && (
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <Loader2 className="h-3.5 w-3.5 animate-spin" /> Loading forecasts…
-        </div>
-      )}
-
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        {FORECAST_LOCATIONS.map((p) => {
-          const fc = data?.find((f) => f.lat === p.lat && f.lon === p.lon);
-          return (
-            <div key={`${p.lat},${p.lon}`} className="rounded-lg border border-border/60 bg-surface-2 p-3">
-              <div className="flex items-start justify-between gap-2">
-                <div className="min-w-0">
-                  <div className="flex items-center gap-1.5">
-                    <MapPin className="h-3.5 w-3.5 shrink-0 text-primary" />
-                    <span className="truncate font-semibold text-sm">{p.name}</span>
-                    <span className="font-mono text-[10px] text-muted-foreground">{p.region}</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-3 grid grid-cols-4 gap-1">
-                {(fc?.days ?? []).map((d, i) => {
-                  const Icon = iconFor(d.code);
-                  return (
-                    <div key={d.date} className="rounded-md bg-background/40 px-1 py-2 text-center">
-                      <div className="font-mono text-[9px] uppercase tracking-wider text-muted-foreground">
-                        {dayLabel(d.date, i)}
-                      </div>
-                      <Icon className="mx-auto my-1 h-4 w-4 text-primary" />
-                      <div className="font-mono text-xs font-semibold">{d.high}°</div>
-                      <div className="font-mono text-[10px] text-muted-foreground">{d.low}°</div>
-                      {d.precipChance > 0 && (
-                        <div className="font-mono text-[9px] text-sky-400">{d.precipChance}%</div>
-                      )}
-                    </div>
-                  );
-                })}
-                {!fc?.days.length && !isLoading && (
-                  <div className="col-span-4 py-2 text-center font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-                    Forecast unavailable
-                  </div>
-                )}
-              </div>
-            </div>
-          );
-        })}
+        {FORECAST_LOCATIONS.map((p) => (
+          <LocationCard key={`${p.lat},${p.lon}`} {...p} />
+        ))}
       </div>
     </div>
   );
