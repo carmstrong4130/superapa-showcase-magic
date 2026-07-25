@@ -7,6 +7,7 @@ import type { TripRow } from "@/lib/dagger-data";
 const FORECAST_LOCATIONS = [
   { name: "Salt Lake City", region: "UT", lat: 40.7608, lon: -111.8910 },
   { name: "Richfield", region: "UT", lat: 38.7725, lon: -112.0838 },
+  { name: "Moab", region: "UT", lat: 38.5733, lon: -109.5498 },
 ];
 
 function iconFor(code: number) {
