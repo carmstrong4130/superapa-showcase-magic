@@ -48,8 +48,8 @@ export function TripWeather({ rows }: { rows: TripRow[] }) {
         </div>
       )}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3">
-        {places.map((p) => {
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        {FORECAST_LOCATIONS.map((p) => {
           const fc = data?.find((f) => f.lat === p.lat && f.lon === p.lon);
           return (
             <div key={`${p.lat},${p.lon}`} className="rounded-lg border border-border/60 bg-surface-2 p-3">
@@ -59,9 +59,6 @@ export function TripWeather({ rows }: { rows: TripRow[] }) {
                     <MapPin className="h-3.5 w-3.5 shrink-0 text-primary" />
                     <span className="truncate font-semibold text-sm">{p.name}</span>
                     <span className="font-mono text-[10px] text-muted-foreground">{p.region}</span>
-                  </div>
-                  <div className="mt-0.5 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-                    {p.visits} {p.visits === 1 ? "visit" : "visits"} · last {p.lastVisit}
                   </div>
                 </div>
               </div>
