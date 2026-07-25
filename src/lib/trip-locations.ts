@@ -23,6 +23,7 @@ const LOCATIONS: TripLocation[] = [
   { key: "STRAWBERRY", name: "Strawberry Reservoir", region: "UT", lat: 40.1708, lon: -111.1636 },
   { key: "OGDEN W.R.", name: "Ogden", region: "UT", lat: 41.223, lon: -111.9738 },
   { key: "SALT LAKE CITY", name: "Salt Lake City", region: "UT", lat: 40.7608, lon: -111.8910 },
+  { key: "MOAB", name: "Moab", region: "UT", lat: 38.5733, lon: -109.5498 },
 ];
 
 export function resolveTripLocation(trip: string): TripLocation | undefined {
