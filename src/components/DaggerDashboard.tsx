@@ -37,8 +37,9 @@ export function DaggerDashboard() {
           <div className="lg:col-span-2 space-y-6">
             <StatGrid stats={stats} />
             <MonthlyChart data={stats.monthly} />
-            <TripWeather rows={rows} />
             <MonthlyLog groups={monthlyLog} />
+            <TripWeather rows={rows} />
+
 
           </div>
 
