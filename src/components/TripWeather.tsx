@@ -27,11 +27,10 @@ function dayLabel(date: string, index: number) {
 }
 
 export function TripWeather({ rows }: { rows: TripRow[] }) {
-  const places = useMemo(() => visitedLocations(rows, 6), [rows]);
-  const points = useMemo(() => places.map((p) => ({ lat: p.lat, lon: p.lon })), [places]);
+  const points = useMemo(() => FORECAST_LOCATIONS.map((p) => ({ lat: p.lat, lon: p.lon })), [rows]);
   const { data, isLoading } = useQuery(forecastQueryOptions(points));
 
-  if (!places.length) return null;
+  if (!FORECAST_LOCATIONS.length) return null;
 
   return (
     <div className="panel p-5">
