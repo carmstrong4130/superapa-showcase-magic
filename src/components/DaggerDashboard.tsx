@@ -2,8 +2,10 @@ import { Fragment, useMemo, useRef, useState, useEffect } from "react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { buildMonthlyLog, computeStats, DAGGER_VEHICLE, type YearGroup } from "@/lib/dagger-data";
 import { tripRowsQueryOptions } from "@/lib/sheet.functions";
+import { TripWeather } from "@/components/TripWeather";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis, Line, LineChart } from "recharts";
 import { Fuel, Gauge, DollarSign, TrendingUp, Send, Sparkles, Loader2 } from "lucide-react";
+
 
 type Msg = { role: "user" | "assistant"; content: string };
 
@@ -35,7 +37,9 @@ export function DaggerDashboard() {
           <div className="lg:col-span-2 space-y-6">
             <StatGrid stats={stats} />
             <MonthlyChart data={stats.monthly} />
+            <TripWeather rows={rows} />
             <MonthlyLog groups={monthlyLog} />
+
           </div>
 
           {/* Right: 1/3 chat */}
