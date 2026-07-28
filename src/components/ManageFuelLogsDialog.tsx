@@ -169,7 +169,7 @@ function EditableRow({ row }: { row: ExtractedRow & { id: string } }) {
   const update = useServerFn(updateFuelLogRow);
   const remove = useServerFn(deleteFuelLogRow);
 
-  const dirty = JSON.stringify(draft) !== JSON.stringify({ ...row, id: undefined, ...draft, ...{} }) ||
+  const dirty =
     draft.date !== row.date ||
     draft.miles !== row.miles ||
     draft.gallons !== row.gallons ||
