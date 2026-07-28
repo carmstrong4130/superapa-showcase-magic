@@ -4,6 +4,7 @@ import { buildMonthlyLog, computeStats, DAGGER_VEHICLE, type YearGroup } from "@
 import { tripRowsQueryOptions } from "@/lib/sheet.functions";
 import { TripWeather } from "@/components/TripWeather";
 import { AddFuelLogButton } from "@/components/AddFuelLogDialog";
+import { ManageFuelLogsButton } from "@/components/ManageFuelLogsDialog";
 
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis, Line, LineChart } from "recharts";
 import { Fuel, Gauge, DollarSign, TrendingUp, Send, Sparkles, Loader2, ChevronRight } from "lucide-react";
@@ -31,7 +32,10 @@ export function DaggerDashboard() {
               </h1>
             </div>
           </div>
-          <AddFuelLogButton />
+          <div className="flex items-center gap-2">
+            <ManageFuelLogsButton />
+            <AddFuelLogButton />
+          </div>
         </header>
 
 

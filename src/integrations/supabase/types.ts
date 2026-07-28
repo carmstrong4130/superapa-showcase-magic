@@ -14,8 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      fuel_log_batches: {
+        Row: {
+          created_at: string
+          end_date: string
+          id: string
+          image_path: string
+          label: string
+          row_count: number
+          start_date: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          end_date: string
+          id?: string
+          image_path?: string
+          label?: string
+          row_count?: number
+          start_date: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          end_date?: string
+          id?: string
+          image_path?: string
+          label?: string
+          row_count?: number
+          start_date?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       trip_entries: {
         Row: {
+          batch_id: string | null
           created_at: string
           entry_date: string
           gallons: number
@@ -26,8 +60,10 @@ export type Database = {
           source: string
           total_cost: number
           trip: string
+          updated_at: string
         }
         Insert: {
+          batch_id?: string | null
           created_at?: string
           entry_date: string
           gallons?: number
@@ -38,8 +74,10 @@ export type Database = {
           source?: string
           total_cost?: number
           trip?: string
+          updated_at?: string
         }
         Update: {
+          batch_id?: string | null
           created_at?: string
           entry_date?: string
           gallons?: number
@@ -50,8 +88,17 @@ export type Database = {
           source?: string
           total_cost?: number
           trip?: string
+          updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "trip_entries_batch_id_fkey"
+            columns: ["batch_id"]
+            isOneToOne: false
+            referencedRelation: "fuel_log_batches"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {

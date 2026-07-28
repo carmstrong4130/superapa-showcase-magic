@@ -67,7 +67,8 @@ function AddFuelLogDialog({ onClose }: { onClose: () => void }) {
     setError(null);
     setStatus("saving");
     try {
-      await save({ data: { rows } });
+      await save({ data: { rows, imageDataUrl: preview ?? undefined } });
+      await queryClient.invalidateQueries({ queryKey: ["fuel-log-batches"] });
       await queryClient.invalidateQueries({ queryKey: tripRowsQueryOptions.queryKey });
       setStatus("saved");
       setTimeout(onClose, 700);
