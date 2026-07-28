@@ -88,9 +88,78 @@ export async function readFuelLogPhoto(imageDataUrl: string): Promise<ExtractedR
   return rows.sort((a, b) => a.date.localeCompare(b.date));
 }
 
-export async function insertTripEntries(rows: ExtractedRow[]): Promise<number> {
+const BUCKET = "fuel-logs";
+
+function fmt(d: string) {
+  const [y, m, day] = d.split("-").map(Number);
+  return new Date(Date.UTC(y, m - 1, day)).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    timeZone: "UTC",
+  });
+}
+
+/** "Apr 3 – Apr 28, 2025" style label derived from the rows in a photo. */
+export function batchLabel(start: string, end: string): string {
+  if (start === end) return fmt(start);
+  const a = fmt(start);
+  const b = fmt(end);
+  return a.slice(-4) === b.slice(-4) ? `${a.slice(0, -6)} – ${b}` : `${a} – ${b}`;
+}
+
+export type BatchSummary = {
+  id: string;
+  label: string;
+  startDate: string;
+  endDate: string;
+  rowCount: number;
+  imageUrl: string | null;
+  createdAt: string;
+  rows: Array<ExtractedRow & { id: string }>;
+};
+
+/** Stores the photo, creates a labelled batch, and inserts its rows. */
+export async function saveFuelLogBatch(
+  rows: ExtractedRow[],
+  imageDataUrl: string | null,
+): Promise<{ saved: number; batchId: string }> {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-  const { error, data } = await supabaseAdmin
+
+  const dates = rows.map((r) => r.date).sort();
+  const startDate = dates[0];
+  const endDate = dates[dates.length - 1];
+
+  let imagePath = "";
+  if (imageDataUrl?.startsWith("data:image/")) {
+    const [meta, b64] = imageDataUrl.split(",");
+    const mime = meta.slice(5, meta.indexOf(";")) || "image/jpeg";
+    const ext = mime.split("/")[1]?.replace("jpeg", "jpg") ?? "jpg";
+    const bytes = Uint8Array.from(atob(b64), (c) => c.charCodeAt(0));
+    imagePath = `${startDate}_${endDate}_${Date.now()}.${ext}`;
+    const { error: upErr } = await supabaseAdmin.storage
+      .from(BUCKET)
+      .upload(imagePath, bytes, { contentType: mime, upsert: true });
+    if (upErr) {
+      console.error("Fuel log image upload failed", upErr);
+      imagePath = "";
+    }
+  }
+
+  const { data: batch, error: batchErr } = await supabaseAdmin
+    .from("fuel_log_batches")
+    .insert({
+      label: batchLabel(startDate, endDate),
+      start_date: startDate,
+      end_date: endDate,
+      image_path: imagePath,
+      row_count: rows.length,
+    })
+    .select("id")
+    .single();
+  if (batchErr || !batch) throw new Error(batchErr?.message ?? "Couldn't create the log batch");
+
+  const { data, error } = await supabaseAdmin
     .from("trip_entries")
     .insert(
       rows.map((r) => ({
@@ -102,11 +171,83 @@ export async function insertTripEntries(rows: ExtractedRow[]): Promise<number> {
         trip: r.trip,
         notes: r.notes,
         source: "photo",
+        batch_id: batch.id,
       })),
     )
     .select("id");
   if (error) throw new Error(error.message);
-  return data?.length ?? 0;
+  return { saved: data?.length ?? 0, batchId: batch.id };
+}
+
+/** Every uploaded photo batch with its (editable) rows. */
+export async function listFuelLogBatches(): Promise<BatchSummary[]> {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { data: batches, error } = await supabaseAdmin
+    .from("fuel_log_batches")
+    .select("id, label, start_date, end_date, image_path, created_at")
+    .order("start_date", { ascending: false });
+  if (error) throw new Error(error.message);
+
+  const ids = (batches ?? []).map((b) => b.id);
+  const { data: entries } = ids.length
+    ? await supabaseAdmin
+        .from("trip_entries")
+        .select("id, batch_id, entry_date, miles, gallons, price_per_gallon, total_cost, trip, notes")
+        .in("batch_id", ids)
+        .order("entry_date", { ascending: true })
+    : { data: [] as never[] };
+
+  return Promise.all(
+    (batches ?? []).map(async (b) => {
+      let imageUrl: string | null = null;
+      if (b.image_path) {
+        const { data: signed } = await supabaseAdmin.storage
+          .from(BUCKET)
+          .createSignedUrl(b.image_path, 60 * 60);
+        imageUrl = signed?.signedUrl ?? null;
+      }
+      const rows = (entries ?? [])
+        .filter((e) => e.batch_id === b.id)
+        .map((e) => ({
+          id: e.id as string,
+          date: String(e.entry_date),
+          miles: Number(e.miles),
+          gallons: Number(e.gallons),
+          pricePerGallon: Number(e.price_per_gallon),
+          totalCost: Number(e.total_cost),
+          trip: e.trip ?? "",
+          notes: e.notes ?? "",
+        }));
+      return {
+        id: b.id as string,
+        label: b.label ?? "",
+        startDate: String(b.start_date),
+        endDate: String(b.end_date),
+        rowCount: rows.length,
+        imageUrl,
+        createdAt: String(b.created_at),
+        rows,
+      };
+    }),
+  );
+}
+
+/** Corrects a single row that was read from a photo. */
+export async function updateTripEntry(id: string, row: ExtractedRow): Promise<void> {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { error } = await supabaseAdmin
+    .from("trip_entries")
+    .update({
+      entry_date: row.date,
+      miles: row.miles,
+      gallons: row.gallons,
+      price_per_gallon: row.pricePerGallon,
+      total_cost: row.totalCost,
+      trip: row.trip,
+      notes: row.notes,
+    })
+    .eq("id", id);
+  if (error) throw new Error(error.message);
 }
 
 export async function deleteTripEntry(id: string): Promise<void> {
@@ -114,6 +255,20 @@ export async function deleteTripEntry(id: string): Promise<void> {
   const { error } = await supabaseAdmin.from("trip_entries").delete().eq("id", id);
   if (error) throw new Error(error.message);
 }
+
+/** Removes a whole photo batch: its rows (cascade) and the stored image. */
+export async function deleteFuelLogBatch(id: string): Promise<void> {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { data: batch } = await supabaseAdmin
+    .from("fuel_log_batches")
+    .select("image_path")
+    .eq("id", id)
+    .maybeSingle();
+  const { error } = await supabaseAdmin.from("fuel_log_batches").delete().eq("id", id);
+  if (error) throw new Error(error.message);
+  if (batch?.image_path) await supabaseAdmin.storage.from(BUCKET).remove([batch.image_path]);
+}
+
 
 /** Photo-imported rows, shaped like the bundled spreadsheet rows. */
 export async function fetchImportedTripRows(): Promise<TripRow[]> {
