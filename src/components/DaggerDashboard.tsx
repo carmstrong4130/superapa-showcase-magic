@@ -29,7 +29,9 @@ export function DaggerDashboard() {
               </h1>
             </div>
           </div>
+          <AddFuelLogButton />
         </header>
+
 
         {/* Two column layout */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
