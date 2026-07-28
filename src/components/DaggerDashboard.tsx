@@ -31,7 +31,10 @@ export function DaggerDashboard() {
               </h1>
             </div>
           </div>
-          <AddFuelLogButton />
+          <div className="flex items-center gap-2">
+            <ManageFuelLogsButton />
+            <AddFuelLogButton />
+          </div>
         </header>
 
 
