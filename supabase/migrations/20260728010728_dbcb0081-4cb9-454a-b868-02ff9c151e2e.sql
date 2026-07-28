@@ -1,0 +1,1 @@
+ALTER TABLE public.fuel_log_batches ADD COLUMN IF NOT EXISTS source_tag text NOT NULL DEFAULT '';

@@ -22,6 +22,7 @@ export type Database = {
           image_path: string
           label: string
           row_count: number
+          source_tag: string
           start_date: string
           updated_at: string
         }
@@ -32,6 +33,7 @@ export type Database = {
           image_path?: string
           label?: string
           row_count?: number
+          source_tag?: string
           start_date: string
           updated_at?: string
         }
@@ -42,6 +44,7 @@ export type Database = {
           image_path?: string
           label?: string
           row_count?: number
+          source_tag?: string
           start_date?: string
           updated_at?: string
         }
