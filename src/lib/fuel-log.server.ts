@@ -119,12 +119,13 @@ export type BatchSummary = {
   rows: Array<ExtractedRow & { id: string }>;
 };
 
-/** Stores the photo, creates a labelled batch, and inserts its rows. */
+/** Stores the photo, creates a labelled batch, and appends its rows to the Excel workbook. */
 export async function saveFuelLogBatch(
   rows: ExtractedRow[],
   imageDataUrl: string | null,
 ): Promise<{ saved: number; batchId: string }> {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { appendExcelRows } = await import("@/lib/excel.server");
 
   const dates = rows.map((r) => r.date).sort();
   const startDate = dates[0];
@@ -146,6 +147,10 @@ export async function saveFuelLogBatch(
     }
   }
 
+  // The Source cell tags each Excel row with the photo it came from.
+  const sourceTag = imagePath || `photo_${startDate}_${endDate}`;
+  await appendExcelRows(rows, sourceTag);
+
   const { data: batch, error: batchErr } = await supabaseAdmin
     .from("fuel_log_batches")
     .insert({
@@ -153,49 +158,28 @@ export async function saveFuelLogBatch(
       start_date: startDate,
       end_date: endDate,
       image_path: imagePath,
+      source_tag: sourceTag,
       row_count: rows.length,
     })
     .select("id")
     .single();
   if (batchErr || !batch) throw new Error(batchErr?.message ?? "Couldn't create the log batch");
 
-  const { data, error } = await supabaseAdmin
-    .from("trip_entries")
-    .insert(
-      rows.map((r) => ({
-        entry_date: r.date,
-        miles: r.miles,
-        gallons: r.gallons,
-        price_per_gallon: r.pricePerGallon,
-        total_cost: r.totalCost,
-        trip: r.trip,
-        notes: r.notes,
-        source: "photo",
-        batch_id: batch.id,
-      })),
-    )
-    .select("id");
-  if (error) throw new Error(error.message);
-  return { saved: data?.length ?? 0, batchId: batch.id };
+  return { saved: rows.length, batchId: batch.id as string };
 }
 
-/** Every uploaded photo batch with its (editable) rows. */
+/** Every uploaded photo batch with its (editable) rows, read live from Excel. */
 export async function listFuelLogBatches(): Promise<BatchSummary[]> {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { readExcelRows } = await import("@/lib/excel.server");
+
   const { data: batches, error } = await supabaseAdmin
     .from("fuel_log_batches")
-    .select("id, label, start_date, end_date, image_path, created_at")
+    .select("id, label, start_date, end_date, image_path, source_tag, created_at")
     .order("start_date", { ascending: false });
   if (error) throw new Error(error.message);
 
-  const ids = (batches ?? []).map((b) => b.id);
-  const { data: entries } = ids.length
-    ? await supabaseAdmin
-        .from("trip_entries")
-        .select("id, batch_id, entry_date, miles, gallons, price_per_gallon, total_cost, trip, notes")
-        .in("batch_id", ids)
-        .order("entry_date", { ascending: true })
-    : { data: [] as never[] };
+  const excelRows = await readExcelRows(true);
 
   return Promise.all(
     (batches ?? []).map(async (b) => {
@@ -206,17 +190,18 @@ export async function listFuelLogBatches(): Promise<BatchSummary[]> {
           .createSignedUrl(b.image_path, 60 * 60);
         imageUrl = signed?.signedUrl ?? null;
       }
-      const rows = (entries ?? [])
-        .filter((e) => e.batch_id === b.id)
-        .map((e) => ({
-          id: e.id as string,
-          date: String(e.entry_date),
-          miles: Number(e.miles),
-          gallons: Number(e.gallons),
-          pricePerGallon: Number(e.price_per_gallon),
-          totalCost: Number(e.total_cost),
-          trip: e.trip ?? "",
-          notes: e.notes ?? "",
+      const tag = (b.source_tag as string) || (b.image_path as string) || "";
+      const rows = excelRows
+        .filter((r) => tag && r.source === tag)
+        .map((r) => ({
+          id: String(r.excelRow),
+          date: r.date,
+          miles: r.miles,
+          gallons: r.gallons,
+          pricePerGallon: r.pricePerGallon,
+          totalCost: r.totalCost,
+          trip: r.trip,
+          notes: r.notes,
         }));
       return {
         id: b.id as string,
@@ -232,63 +217,41 @@ export async function listFuelLogBatches(): Promise<BatchSummary[]> {
   );
 }
 
-/** Corrects a single row that was read from a photo. */
+/** Corrects a single row directly in the Excel workbook. */
 export async function updateTripEntry(id: string, row: ExtractedRow): Promise<void> {
-  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-  const { error } = await supabaseAdmin
-    .from("trip_entries")
-    .update({
-      entry_date: row.date,
-      miles: row.miles,
-      gallons: row.gallons,
-      price_per_gallon: row.pricePerGallon,
-      total_cost: row.totalCost,
-      trip: row.trip,
-      notes: row.notes,
-    })
-    .eq("id", id);
-  if (error) throw new Error(error.message);
+  const { readExcelRows, updateExcelRow } = await import("@/lib/excel.server");
+  const excelRow = Number(id);
+  if (!Number.isFinite(excelRow)) throw new Error("Unknown row");
+  const existing = (await readExcelRows(true)).find((r) => r.excelRow === excelRow);
+  await updateExcelRow(excelRow, row, existing?.source ?? "");
 }
 
 export async function deleteTripEntry(id: string): Promise<void> {
-  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-  const { error } = await supabaseAdmin.from("trip_entries").delete().eq("id", id);
-  if (error) throw new Error(error.message);
+  const { deleteExcelRow } = await import("@/lib/excel.server");
+  const excelRow = Number(id);
+  if (!Number.isFinite(excelRow)) throw new Error("Unknown row");
+  await deleteExcelRow(excelRow);
 }
 
-/** Removes a whole photo batch: its rows (cascade) and the stored image. */
+/** Removes a whole photo batch: its Excel rows, the batch record, and the stored image. */
 export async function deleteFuelLogBatch(id: string): Promise<void> {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { readExcelRows, deleteExcelRows } = await import("@/lib/excel.server");
+
   const { data: batch } = await supabaseAdmin
     .from("fuel_log_batches")
-    .select("image_path")
+    .select("image_path, source_tag")
     .eq("id", id)
     .maybeSingle();
+
+  const tag = (batch?.source_tag as string) || (batch?.image_path as string) || "";
+  if (tag) {
+    const rows = (await readExcelRows(true)).filter((r) => r.source === tag).map((r) => r.excelRow);
+    if (rows.length) await deleteExcelRows(rows);
+  }
+
   const { error } = await supabaseAdmin.from("fuel_log_batches").delete().eq("id", id);
   if (error) throw new Error(error.message);
   if (batch?.image_path) await supabaseAdmin.storage.from(BUCKET).remove([batch.image_path]);
 }
 
-
-/** Photo-imported rows, shaped like the bundled spreadsheet rows. */
-export async function fetchImportedTripRows(): Promise<TripRow[]> {
-  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-  const { data, error } = await supabaseAdmin
-    .from("trip_entries")
-    .select("id, entry_date, miles, gallons, price_per_gallon, total_cost, trip, notes")
-    .order("entry_date", { ascending: true });
-  if (error) {
-    console.error("Failed to read imported trip entries", error);
-    return [];
-  }
-  return (data ?? []).map((r) => ({
-    id: `db-${r.id}`,
-    date: String(r.entry_date),
-    miles: Number(r.miles),
-    gallons: Number(r.gallons),
-    pricePerGallon: Number(r.price_per_gallon),
-    totalCost: Number(r.total_cost),
-    trip: r.trip ?? "",
-    notes: r.notes ?? "",
-  }));
-}
