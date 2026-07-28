@@ -1,10 +1,16 @@
-// Server-only: Dagger's trip log = bundled spreadsheet export + photo-imported rows.
+// Server-only: Dagger's trip log lives in the OneDrive workbook (single source of truth).
 import type { TripRow } from "@/lib/dagger-data";
 import trips from "@/data/trips.json";
 
 export async function fetchTripRows(): Promise<TripRow[]> {
-  const base = (trips as TripRow[]).filter((r) => r.date !== "");
-  const { fetchImportedTripRows } = await import("@/lib/fuel-log.server");
-  const imported = await fetchImportedTripRows();
-  return [...base, ...imported].sort((a, b) => a.date.localeCompare(b.date));
+  try {
+    const { readExcelRows } = await import("@/lib/excel.server");
+    const rows = await readExcelRows();
+    if (rows.length) {
+      return rows.map(({ excelRow: _excelRow, source: _source, ...r }) => r);
+    }
+  } catch (err) {
+    console.error("Excel read failed, falling back to bundled snapshot", err);
+  }
+  return (trips as TripRow[]).filter((r) => r.date !== "").sort((a, b) => a.date.localeCompare(b.date));
 }
