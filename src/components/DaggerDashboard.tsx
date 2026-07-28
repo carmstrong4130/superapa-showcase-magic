@@ -3,6 +3,8 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { buildMonthlyLog, computeStats, DAGGER_VEHICLE, type YearGroup } from "@/lib/dagger-data";
 import { tripRowsQueryOptions } from "@/lib/sheet.functions";
 import { TripWeather } from "@/components/TripWeather";
+import { AddFuelLogButton } from "@/components/AddFuelLogDialog";
+
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis, Line, LineChart } from "recharts";
 import { Fuel, Gauge, DollarSign, TrendingUp, Send, Sparkles, Loader2, ChevronRight } from "lucide-react";
 
@@ -29,7 +31,9 @@ export function DaggerDashboard() {
               </h1>
             </div>
           </div>
+          <AddFuelLogButton />
         </header>
+
 
         {/* Two column layout */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
