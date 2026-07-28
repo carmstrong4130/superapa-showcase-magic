@@ -14,7 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      trip_entries: {
+        Row: {
+          created_at: string
+          entry_date: string
+          gallons: number
+          id: string
+          miles: number
+          notes: string
+          price_per_gallon: number
+          source: string
+          total_cost: number
+          trip: string
+        }
+        Insert: {
+          created_at?: string
+          entry_date: string
+          gallons?: number
+          id?: string
+          miles?: number
+          notes?: string
+          price_per_gallon?: number
+          source?: string
+          total_cost?: number
+          trip?: string
+        }
+        Update: {
+          created_at?: string
+          entry_date?: string
+          gallons?: number
+          id?: string
+          miles?: number
+          notes?: string
+          price_per_gallon?: number
+          source?: string
+          total_cost?: number
+          trip?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
