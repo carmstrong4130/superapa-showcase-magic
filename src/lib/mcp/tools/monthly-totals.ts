@@ -1,4 +1,5 @@
 import { defineTool } from "@lovable.dev/mcp-js";
+import { isAuthorized, UNAUTHORIZED } from "../guard";
 import { z } from "zod";
 import { buildMonthlyLog, computeStats } from "@/lib/dagger-data";
 
@@ -11,7 +12,8 @@ export default defineTool({
     year: z.number().int().optional().describe("Optional year filter, e.g. 2025."),
   },
   annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
-  handler: async ({ year }) => {
+  handler: async ({ year }, ctx) => {
+    if (!isAuthorized(ctx)) return UNAUTHORIZED;
     const { fetchTripRows } = await import("@/lib/sheet.server");
     const rows = await fetchTripRows();
     const groups = buildMonthlyLog(computeStats(rows));

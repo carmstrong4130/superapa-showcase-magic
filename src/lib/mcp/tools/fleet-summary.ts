@@ -1,4 +1,5 @@
 import { defineTool } from "@lovable.dev/mcp-js";
+import { isAuthorized, UNAUTHORIZED } from "../guard";
 import { computeStats, DAGGER_VEHICLE } from "@/lib/dagger-data";
 
 export default defineTool({
@@ -8,7 +9,8 @@ export default defineTool({
     "Overall totals for the vehicle Dagger: total miles, gallons, fuel cost, fill-ups, average price per gallon and MPG.",
   inputSchema: {},
   annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
-  handler: async () => {
+  handler: async (_input, ctx) => {
+    if (!isAuthorized(ctx)) return UNAUTHORIZED;
     const { fetchTripRows } = await import("@/lib/sheet.server");
     const rows = await fetchTripRows();
     const s = computeStats(rows);
