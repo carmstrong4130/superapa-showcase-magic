@@ -2,8 +2,17 @@ import { useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { Plus, Loader2, X, Camera, Check } from "lucide-react";
-import { extractFuelLog, saveFuelLogRows, type ExtractedRow } from "@/lib/fuel-log.functions";
+import { extractFuelLog, saveFuelLogRows } from "@/lib/fuel-log.functions";
+import { unresolvedFields, type DraftRow, type NumericField } from "@/lib/dagger-data";
 import { tripRowsQueryOptions } from "@/lib/sheet.functions";
+
+/** Blank means "still unknown" — it must never quietly become 0. */
+function parseCell(v: string): number | null {
+  const t = v.trim();
+  if (t === "") return null;
+  const n = Number(t);
+  return Number.isFinite(n) ? n : null;
+}
 
 function fileToDataUrl(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -38,7 +47,7 @@ function AddFuelLogDialog({ onClose }: { onClose: () => void }) {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const [preview, setPreview] = useState<string | null>(null);
-  const [rows, setRows] = useState<ExtractedRow[] | null>(null);
+  const [rows, setRows] = useState<DraftRow[] | null>(null);
   const [status, setStatus] = useState<"idle" | "reading" | "saving" | "saved">("idle");
   const [error, setError] = useState<string | null>(null);
 
@@ -58,8 +67,19 @@ function AddFuelLogDialog({ onClose }: { onClose: () => void }) {
     }
   }
 
-  function updateRow(i: number, patch: Partial<ExtractedRow>) {
-    setRows((prev) => prev?.map((r, idx) => (idx === i ? { ...r, ...patch } : r)) ?? prev);
+  /** Re-checks the row's flags after an edit: typing a value clears its warning. */
+  function updateRow(i: number, patch: Partial<DraftRow>) {
+    setRows(
+      (prev) =>
+        prev?.map((r, idx) => {
+          if (idx !== i) return r;
+          const next = { ...r, ...patch };
+          const edited = Object.keys(patch) as Array<keyof DraftRow>;
+          next.computedFields = next.computedFields.filter((f) => !edited.includes(f));
+          next.uncertainFields = unresolvedFields(next);
+          return next;
+        }) ?? prev,
+    );
   }
 
   async function onSave() {
@@ -79,6 +99,7 @@ function AddFuelLogDialog({ onClose }: { onClose: () => void }) {
   }
 
   const busy = status === "reading" || status === "saving";
+  const unreadableRows = rows?.filter((r) => r.uncertainFields.length > 0).length ?? 0;
 
   return (
     <div className="fixed inset-0 z-50 grid place-items-center bg-background/85 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label="Add fuel log from photo">
@@ -145,6 +166,14 @@ function AddFuelLogDialog({ onClose }: { onClose: () => void }) {
               <p className="mb-2 text-sm text-muted-foreground">
                 Found {rows.length} {rows.length === 1 ? "row" : "rows"}. Check the numbers, edit anything that's off, then save.
               </p>
+              {unreadableRows > 0 && (
+                <p className="mb-2 rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive" role="alert">
+                  {unreadableRows === 1
+                    ? "1 row has a value the photo didn't show clearly"
+                    : `${unreadableRows} rows have values the photo didn't show clearly`}
+                  , marked in red. Type them in — nothing saves until they're filled.
+                </p>
+              )}
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-border/60 text-left font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
@@ -161,10 +190,10 @@ function AddFuelLogDialog({ onClose }: { onClose: () => void }) {
                   {rows.map((r, i) => (
                     <tr key={i} className="border-b border-border/30">
                       <Cell value={r.date} type="date" onChange={(v) => updateRow(i, { date: v })} />
-                      <Cell value={r.miles} type="number" onChange={(v) => updateRow(i, { miles: Number(v) || 0 })} />
-                      <Cell value={r.gallons} type="number" onChange={(v) => updateRow(i, { gallons: Number(v) || 0 })} />
-                      <Cell value={r.pricePerGallon} type="number" onChange={(v) => updateRow(i, { pricePerGallon: Number(v) || 0 })} />
-                      <Cell value={r.totalCost} type="number" onChange={(v) => updateRow(i, { totalCost: Number(v) || 0 })} />
+                      <Cell value={r.miles} type="number" flag={flagFor(r, "miles")} onChange={(v) => updateRow(i, { miles: parseCell(v) })} />
+                      <Cell value={r.gallons} type="number" flag={flagFor(r, "gallons")} onChange={(v) => updateRow(i, { gallons: parseCell(v) })} />
+                      <Cell value={r.pricePerGallon} type="number" flag={flagFor(r, "pricePerGallon")} onChange={(v) => updateRow(i, { pricePerGallon: parseCell(v) })} />
+                      <Cell value={r.totalCost} type="number" flag={flagFor(r, "totalCost")} onChange={(v) => updateRow(i, { totalCost: parseCell(v) })} />
                       <Cell value={r.trip} type="text" onChange={(v) => updateRow(i, { trip: v.toUpperCase() })} />
                       <td className="py-1 text-right">
                         <button
@@ -191,7 +220,8 @@ function AddFuelLogDialog({ onClose }: { onClose: () => void }) {
           <button
             type="button"
             onClick={onSave}
-            disabled={!rows?.length || busy || status === "saved"}
+            disabled={!rows?.length || busy || status === "saved" || unreadableRows > 0}
+            title={unreadableRows > 0 ? "Fill in the cells marked in red first" : undefined}
             className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground transition hover:brightness-110 disabled:opacity-40"
           >
             {status === "saving" && <Loader2 className="h-4 w-4 animate-spin" />}
@@ -204,15 +234,48 @@ function AddFuelLogDialog({ onClose }: { onClose: () => void }) {
   );
 }
 
-function Cell({ value, type, onChange }: { value: string | number; type: "text" | "number" | "date"; onChange: (v: string) => void }) {
+type CellFlag = "unreadable" | "computed" | undefined;
+
+function flagFor(row: DraftRow, field: NumericField): CellFlag {
+  if (row.uncertainFields.includes(field)) return "unreadable";
+  if (row.computedFields.includes(field)) return "computed";
+  return undefined;
+}
+
+const FLAG_STYLES: Record<"unreadable" | "computed", string> = {
+  unreadable: "border-destructive bg-destructive/10 focus:border-destructive",
+  computed: "border-primary/50 bg-primary/5 focus:border-primary",
+};
+
+const FLAG_TITLES: Record<"unreadable" | "computed", string> = {
+  unreadable: "Couldn't read this from the photo — type it in",
+  computed: "Calculated from the other two money columns — worth a glance",
+};
+
+function Cell({
+  value,
+  type,
+  flag,
+  onChange,
+}: {
+  value: string | number | null;
+  type: "text" | "number" | "date";
+  flag?: CellFlag;
+  onChange: (v: string) => void;
+}) {
   return (
     <td className="py-1 pr-2">
       <input
         type={type}
         step={type === "number" ? "0.01" : undefined}
-        value={value}
+        value={value ?? ""}
+        placeholder={flag === "unreadable" ? "?" : undefined}
+        aria-invalid={flag === "unreadable" || undefined}
+        title={flag ? FLAG_TITLES[flag] : undefined}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full min-w-[5.5rem] rounded border border-border/60 bg-background/60 px-2 py-1 text-sm outline-none focus:border-primary"
+        className={`w-full min-w-[5.5rem] rounded border px-2 py-1 text-sm outline-none ${
+          flag ? FLAG_STYLES[flag] : "border-border/60 bg-background/60 focus:border-primary"
+        }`}
       />
     </td>
   );

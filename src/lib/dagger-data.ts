@@ -11,6 +11,37 @@ export type TripRow = {
   notes: string;
 };
 
+export const NUMERIC_FIELDS = ["miles", "gallons", "pricePerGallon", "totalCost"] as const;
+export type NumericField = (typeof NUMERIC_FIELDS)[number];
+
+/**
+ * A row as it comes off a photo, before anyone has checked it. Numeric cells are
+ * null when the photo didn't show them clearly — never 0, which would be
+ * indistinguishable from a zero that was actually written down. A draft can't be
+ * saved while any null remains.
+ */
+export type DraftRow = {
+  date: string;
+  miles: number | null;
+  gallons: number | null;
+  pricePerGallon: number | null;
+  totalCost: number | null;
+  trip: string;
+  notes: string;
+  /** Cells the extractor could not read. Blocks saving until filled in. */
+  uncertainFields: NumericField[];
+  /** Cells derived from the other two money columns rather than read off the page. */
+  computedFields: NumericField[];
+};
+
+/** The numeric cells still without a value — the list that blocks saving. */
+export function unresolvedFields(row: Pick<DraftRow, NumericField>): NumericField[] {
+  return NUMERIC_FIELDS.filter((f) => {
+    const v = row[f];
+    return v === null || v === undefined || !Number.isFinite(v);
+  });
+}
+
 export const DAGGER_VEHICLE = {
   name: "Dagger",
   make: "GMC",
