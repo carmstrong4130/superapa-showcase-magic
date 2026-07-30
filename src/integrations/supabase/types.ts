@@ -50,59 +50,6 @@ export type Database = {
         }
         Relationships: []
       }
-      trip_entries: {
-        Row: {
-          batch_id: string | null
-          created_at: string
-          entry_date: string
-          gallons: number
-          id: string
-          miles: number
-          notes: string
-          price_per_gallon: number
-          source: string
-          total_cost: number
-          trip: string
-          updated_at: string
-        }
-        Insert: {
-          batch_id?: string | null
-          created_at?: string
-          entry_date: string
-          gallons?: number
-          id?: string
-          miles?: number
-          notes?: string
-          price_per_gallon?: number
-          source?: string
-          total_cost?: number
-          trip?: string
-          updated_at?: string
-        }
-        Update: {
-          batch_id?: string | null
-          created_at?: string
-          entry_date?: string
-          gallons?: number
-          id?: string
-          miles?: number
-          notes?: string
-          price_per_gallon?: number
-          source?: string
-          total_cost?: number
-          trip?: string
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "trip_entries_batch_id_fkey"
-            columns: ["batch_id"]
-            isOneToOne: false
-            referencedRelation: "fuel_log_batches"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
     }
     Views: {
       [_ in never]: never
