@@ -1,4 +1,5 @@
 import { defineTool } from "@lovable.dev/mcp-js";
+import { isAuthorized, UNAUTHORIZED } from "../guard";
 import { z } from "zod";
 import type { TripRow } from "@/lib/dagger-data";
 
@@ -13,7 +14,8 @@ export default defineTool({
     to: z.string().optional().describe("Only entries on or before this ISO date (YYYY-MM-DD)."),
   },
   annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
-  handler: async ({ limit, from, to }) => {
+  handler: async ({ limit, from, to }, ctx) => {
+    if (!isAuthorized(ctx)) return UNAUTHORIZED;
     const { fetchTripRows } = await import("@/lib/sheet.server");
     const rows: TripRow[] = await fetchTripRows();
     const filtered = rows
