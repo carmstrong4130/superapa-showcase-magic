@@ -1,48 +1,77 @@
 // Server-only: photo -> structured fuel log rows, plus persistence in Lovable Cloud.
 import type { ExtractedRow } from "@/lib/fuel-log.functions";
-import type { TripRow } from "@/lib/dagger-data";
+import { unresolvedFields, type DraftRow, type NumericField } from "@/lib/dagger-data";
 
 const GATEWAY = "https://ai.gateway.lovable.dev/v1/chat/completions";
 
 const SYSTEM = `You read photos of a handwritten or printed vehicle fuel/gas log and convert them to JSON.
 Return ONLY a JSON object of the form:
 {"rows":[{"date":"YYYY-MM-DD","miles":0,"gallons":0,"pricePerGallon":0,"totalCost":0,"trip":"","notes":""}]}
+Any of the four numbers may be null instead — see the rules.
 Rules:
 - One object per log line / fill-up. Skip header rows and totals rows.
 - date must be ISO YYYY-MM-DD. If the year is missing, infer it from surrounding rows or use the current year.
 - miles = miles driven for that entry. gallons = gallons purchased.
-- If pricePerGallon is missing but gallons and totalCost exist, compute it (and vice versa). Round money to 2 decimals.
-- trip = destination or trip name written on the row, uppercase, else "".
+- If a number is unreadable, smudged, ambiguous, or simply not written, use null. Never guess, and never use 0 as a stand-in: 0 means you clearly read a zero. A person checks every null before the row is saved, so null is always the safe answer.
+- Do not work out a missing money value yourself. Leave it null; it gets derived afterwards and shown as calculated.
+- trip = destination or trip name written on the row, uppercase, else "". Put it only on the row it is actually written on — do not repeat it on the later rows of a multi-tank trip.
 - notes = anything else written on the row, else "".
-- Numbers must be plain numbers, no currency symbols. If a value is unreadable, use 0.`;
+- Numbers must be plain numbers, no currency symbols.`;
 
-function coerceRow(raw: Record<string, unknown>): ExtractedRow | null {
-  const num = (v: unknown) => {
-    const n = typeof v === "number" ? v : parseFloat(String(v ?? "").replace(/[^0-9.\-]/g, ""));
-    return Number.isFinite(n) ? n : 0;
-  };
+/** null when the photo didn't clearly show a number. 0 is only ever a legible zero. */
+function toNumberOrNull(v: unknown): number | null {
+  if (v === null || v === undefined) return null;
+  if (typeof v === "number") return Number.isFinite(v) ? v : null;
+  const cleaned = String(v).replace(/[^0-9.\-]/g, "");
+  if (cleaned === "" || cleaned === "-" || cleaned === ".") return null;
+  const n = parseFloat(cleaned);
+  return Number.isFinite(n) ? n : null;
+}
+
+const round = (n: number, places: number) => {
+  const factor = 10 ** places;
+  return Math.round(n * factor) / factor;
+};
+
+function coerceRow(raw: Record<string, unknown>): DraftRow | null {
   const date = String(raw.date ?? "").trim();
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return null;
 
-  let gallons = num(raw.gallons);
-  let pricePerGallon = num(raw.pricePerGallon);
-  let totalCost = num(raw.totalCost);
-  if (!totalCost && gallons && pricePerGallon) totalCost = gallons * pricePerGallon;
-  if (!pricePerGallon && gallons && totalCost) pricePerGallon = totalCost / gallons;
-  if (!gallons && pricePerGallon && totalCost) gallons = totalCost / pricePerGallon;
+  const miles = toNumberOrNull(raw.miles);
+  let gallons = toNumberOrNull(raw.gallons);
+  let pricePerGallon = toNumberOrNull(raw.pricePerGallon);
+  let totalCost = toNumberOrNull(raw.totalCost);
 
-  return {
+  // Filling in the one missing money column from the other two is arithmetic, not a
+  // guess — but it still gets flagged so the number is checked rather than trusted.
+  const computedFields: NumericField[] = [];
+  if (totalCost === null && gallons !== null && pricePerGallon !== null) {
+    totalCost = gallons * pricePerGallon;
+    computedFields.push("totalCost");
+  } else if (pricePerGallon === null && gallons !== null && gallons !== 0 && totalCost !== null) {
+    pricePerGallon = totalCost / gallons;
+    computedFields.push("pricePerGallon");
+  } else if (gallons === null && pricePerGallon !== null && pricePerGallon !== 0 && totalCost !== null) {
+    gallons = totalCost / pricePerGallon;
+    computedFields.push("gallons");
+  }
+
+  const row: DraftRow = {
     date,
-    miles: Math.round(num(raw.miles) * 10) / 10,
-    gallons: Math.round(gallons * 10) / 10,
-    pricePerGallon: Math.round(pricePerGallon * 1000) / 1000,
-    totalCost: Math.round(totalCost * 100) / 100,
+    miles: miles === null ? null : round(miles, 1),
+    gallons: gallons === null ? null : round(gallons, 1),
+    pricePerGallon: pricePerGallon === null ? null : round(pricePerGallon, 3),
+    totalCost: totalCost === null ? null : round(totalCost, 2),
     trip: String(raw.trip ?? "").trim().toUpperCase(),
     notes: String(raw.notes ?? "").trim(),
+    uncertainFields: [],
+    computedFields,
   };
+  row.uncertainFields = unresolvedFields(row);
+  return row;
 }
 
-export async function readFuelLogPhoto(imageDataUrl: string): Promise<ExtractedRow[]> {
+export async function readFuelLogPhoto(imageDataUrl: string): Promise<DraftRow[]> {
   const apiKey = process.env.LOVABLE_API_KEY;
   if (!apiKey) throw new Error("AI is not configured for this project");
 
@@ -83,7 +112,7 @@ export async function readFuelLogPhoto(imageDataUrl: string): Promise<ExtractedR
     throw new Error("Couldn't understand the log in that photo.");
   }
 
-  const rows = (parsed.rows ?? []).map(coerceRow).filter((r): r is ExtractedRow => r !== null);
+  const rows = (parsed.rows ?? []).map(coerceRow).filter((r): r is DraftRow => r !== null);
   if (!rows.length) throw new Error("No readable fill-up rows were found in that photo.");
   return rows.sort((a, b) => a.date.localeCompare(b.date));
 }

@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import type { TripRow } from "@/lib/dagger-data";
+import { unresolvedFields, type DraftRow, type TripRow } from "@/lib/dagger-data";
 
 export type ExtractedRow = {
   date: string;
@@ -11,28 +11,54 @@ export type ExtractedRow = {
   notes: string;
 };
 
-/** Reads a photo of a handwritten fuel log and returns structured rows (no saving). */
+/** Drops the draft-only flags once every cell has a value. */
+function toExtractedRow(row: DraftRow): ExtractedRow {
+  return {
+    date: row.date,
+    miles: row.miles as number,
+    gallons: row.gallons as number,
+    pricePerGallon: row.pricePerGallon as number,
+    totalCost: row.totalCost as number,
+    trip: row.trip,
+    notes: row.notes,
+  };
+}
+
+/** Reads a photo of a handwritten fuel log and returns draft rows (no saving). */
 export const extractFuelLog = createServerFn({ method: "POST" })
   .inputValidator((data: { imageDataUrl: string }) => {
     if (!data?.imageDataUrl?.startsWith("data:image/")) throw new Error("Expected an image file");
     if (data.imageDataUrl.length > 12_000_000) throw new Error("Image is too large (max ~8MB)");
     return data;
   })
-  .handler(async ({ data }): Promise<{ rows: ExtractedRow[] }> => {
+  .handler(async ({ data }): Promise<{ rows: DraftRow[] }> => {
     const { readFuelLogPhoto } = await import("@/lib/fuel-log.server");
     return { rows: await readFuelLogPhoto(data.imageDataUrl) };
   });
 
-/** Saves reviewed rows as a labelled batch, keeping the source photo. */
+/**
+ * Saves reviewed rows as a labelled batch, keeping the source photo. Rows with a
+ * cell the photo didn't show are refused here as well as in the dialog, so an
+ * unreadable value can never reach the log as a silent 0.
+ */
 export const saveFuelLogRows = createServerFn({ method: "POST" })
-  .inputValidator((data: { rows: ExtractedRow[]; imageDataUrl?: string }) => {
+  .inputValidator((data: { rows: DraftRow[]; imageDataUrl?: string }) => {
     if (!Array.isArray(data?.rows) || data.rows.length === 0) throw new Error("No rows to save");
     if (data.rows.length > 100) throw new Error("Too many rows in one upload");
+    data.rows.forEach((row, i) => {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(row?.date ?? "")) {
+        throw new Error(`Row ${i + 1}: date must be YYYY-MM-DD`);
+      }
+      const missing = unresolvedFields(row);
+      if (missing.length) {
+        throw new Error(`Row ${i + 1}: fill in ${missing.join(", ")} before saving.`);
+      }
+    });
     return data;
   })
   .handler(async ({ data }): Promise<{ saved: number; batchId: string }> => {
     const { saveFuelLogBatch } = await import("@/lib/fuel-log.server");
-    return saveFuelLogBatch(data.rows, data.imageDataUrl ?? null);
+    return saveFuelLogBatch(data.rows.map(toExtractedRow), data.imageDataUrl ?? null);
   });
 
 /** All uploaded photo batches with their rows, for review and correction. */
